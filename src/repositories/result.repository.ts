@@ -210,6 +210,7 @@ export async function saveManualResults(input: ResultUploadDTO): Promise<MatchRe
   );
 
 await saveMatchSource(
+  client,
   savedMatch.id,
   ResultSource.MANUAL,
   SOURCE_PRIORITY.manual,
@@ -224,6 +225,7 @@ saved.push(savedMatch);
 
 await client.query("COMMIT");
 return saved;
+
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -335,7 +337,7 @@ export async function syncFpfResults(
         continue;
       }
 
-      await client.query(
+      const savedResult = await client.query(
         `INSERT INTO matches (
            competition_id, external_id, home_team, away_team, group_name, played_at, venue,
            home_score, away_score, status, source
@@ -350,10 +352,24 @@ export async function syncFpfResults(
            home_score = EXCLUDED.home_score,
            away_score = EXCLUDED.away_score,
            status = EXCLUDED.status,
-           updated_at = NOW()`,
+           updated_at = NOW()
+RETURNING id`,
         [localCompetitionId, externalId, match.homeTeam, match.awayTeam, match.groupName,
           match.playedAt, match.venue, match.homeScore, match.awayScore, match.status]
       );
+const matchId = Number(
+  savedResult.rows[0]?.id
+);
+
+await saveMatchSource(
+  client,
+  matchId,
+  ResultSource.FPF,
+  SOURCE_PRIORITY.fpf,
+  null,
+  match.homeScore,
+  match.awayScore
+);
     }
     await client.query("COMMIT");
     return { localCompetitionId, saved: matches.length };

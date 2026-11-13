@@ -17,6 +17,12 @@ export interface MatchSource {
 }
 
 export async function saveMatchSource(
+  queryable: {
+    query: (
+      sql: string,
+      params?: unknown[]
+    ) => Promise<unknown>;
+  },
   matchId: number,
   source: ResultSource,
   sourcePriority: number,
@@ -25,7 +31,7 @@ export async function saveMatchSource(
   awayScore: number | null
 ): Promise<void> {
 
-  await pool.query(
+  await queryable.query(
     `
       INSERT INTO match_sources (
         match_id,
