@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: afvr-resultados
+    runtime: node
+    plan: free
+    buildCommand: "npm ci && npm run build"
+    startCommand: "npm start"
+    healthCheckPath: /ready
+    envVars:
+      - key: HOST
+        value: "0.0.0.0"
+      - key: NODE_VERSION
+        value: "24.22.1"
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: AUTH_TOKEN_SECRET
+        sync: false

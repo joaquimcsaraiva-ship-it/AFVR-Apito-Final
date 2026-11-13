@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS competitions (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  season VARCHAR(9) NOT NULL,
+  sport VARCHAR(20) NOT NULL CHECK (sport IN ('football', 'futsal')),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

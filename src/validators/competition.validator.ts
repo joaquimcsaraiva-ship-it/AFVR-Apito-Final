@@ -1,0 +1,73 @@
+import { z } from "zod";
+
+const seasonSchema = z
+  .string()
+  .trim()
+  .refine(
+    (season: string) => {
+      const match = season.match(
+        /^(\d{4})\/(\d{4})$/
+      );
+
+      if (!match) {
+        return false;
+      }
+
+      const startYear = Number(match[1]);
+      const endYear = Number(match[2]);
+
+      return endYear === startYear + 1;
+    },
+    {
+      message:
+        "A época deve ter anos consecutivos no formato YYYY/YYYY+1"
+    }
+  );
+
+const competitionFields = {
+  name: z
+    .string()
+    .trim()
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(150, "O nome não pode exceder 150 caracteres"),
+
+  season: seasonSchema,
+
+  sport: z.enum(
+    ["football", "futsal"],
+    {
+      message:
+        "O desporto deve ser football ou futsal"
+    }
+  ),
+
+  active: z.boolean()
+};
+
+export const createCompetitionSchema =
+  z.strictObject(competitionFields);
+
+export const updateCompetitionSchema =
+  z.strictObject(competitionFields);
+
+export const patchCompetitionSchema =
+  z
+    .strictObject(competitionFields)
+    .partial()
+    .refine(
+      (data) =>
+        Object.keys(data).length > 0,
+      {
+        message:
+          "Indique pelo menos um campo para atualizar"
+      }
+    );
+
+export type CreateCompetitionDTO =
+  z.infer<typeof createCompetitionSchema>;
+
+export type UpdateCompetitionDTO =
+  z.infer<typeof updateCompetitionSchema>;
+
+export type PatchCompetitionDTO =
+  z.infer<typeof patchCompetitionSchema>;
