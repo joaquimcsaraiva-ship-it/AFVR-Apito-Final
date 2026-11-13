@@ -434,3 +434,15 @@ if (resolution) {
     client.release();
   }
 }
+export async function syncAfvrResults(
+  associationId: number,
+  competition: FpfCompetition,
+  matches: FpfMatch[]
+): Promise<{ localCompetitionId: number; saved: number }> {
+
+  return syncFpfResults(
+    associationId,
+    competition,
+    matches
+  );
+}

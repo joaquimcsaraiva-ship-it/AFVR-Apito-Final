@@ -1,13 +1,20 @@
-export interface AfvrMatch {
-  homeTeam: string;
-  awayTeam: string;
+import {
+  fetchFpfCompetitionMatches,
+  type FpfMatch
+} from "./fpf.service";
 
-  homeScore: number | null;
-  awayScore: number | null;
-}
+import type {
+  FpfSyncDTO
+} from "../validators/result.validator";
 
-export async function fetchAfvrResults(): Promise<
-  AfvrMatch[]
-> {
-  return [];
+export type AfvrMatch = FpfMatch;
+
+export async function fetchAfvrResults(
+  input: FpfSyncDTO
+): Promise<AfvrMatch[]> {
+
+  const result =
+    await fetchFpfCompetitionMatches(input);
+
+  return result.matches;
 }
