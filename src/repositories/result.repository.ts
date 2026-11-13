@@ -1,3 +1,4 @@
+import { resolveMatch } from "../services/conflict-resolution.service";
 import { ResultSource } from "../types/result-source";
 import { SOURCE_PRIORITY } from "../services/source-priority.service";
 import { saveMatchSource } from "./match-source.repository";
@@ -218,7 +219,33 @@ await saveMatchSource(
   savedMatch.homeScore,
   savedMatch.awayScore
 );
+const resolution =
+  await resolveMatch(savedMatch.id);
 
+console.log(
+  "Resolution:",
+  resolution
+);
+if (resolution) {
+  await client.query(
+    `
+      UPDATE matches
+      SET
+        official_source = $2,
+        verification_status = $3,
+        conflict_detected = $4
+      WHERE id = $1
+    `,
+    [
+      savedMatch.id,
+      resolution.officialSource,
+      resolution.conflictDetected
+        ? "conflict"
+        : "official",
+      resolution.conflictDetected
+    ]
+  );
+}
 saved.push(savedMatch);
 
 }
@@ -370,6 +397,33 @@ await saveMatchSource(
   match.homeScore,
   match.awayScore
 );
+const resolution =
+  await resolveMatch(matchId);
+
+console.log(
+  "Resolution:",
+  resolution
+);
+if (resolution) {
+  await client.query(
+    `
+      UPDATE matches
+      SET
+        official_source = $2,
+        verification_status = $3,
+        conflict_detected = $4
+      WHERE id = $1
+    `,
+    [
+      matchId,
+      resolution.officialSource,
+      resolution.conflictDetected
+        ? "conflict"
+        : "official",
+      resolution.conflictDetected
+    ]
+  );
+}
     }
     await client.query("COMMIT");
     return { localCompetitionId, saved: matches.length };
