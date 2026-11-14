@@ -4,6 +4,11 @@ import * as controller from "../controllers/result.controller";
 import { requireAdmin } from "../middleware/require-admin";
 
 const router = Router();
+router.get(
+  "/conflicts",
+  requireAdmin,
+  controller.getConflicts
+);
 
 router.get("/", controller.getByCompetition);
 router.get("/standings", controller.getStandings);

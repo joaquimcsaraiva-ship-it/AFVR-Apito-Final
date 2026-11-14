@@ -70,6 +70,24 @@ export async function getFpfCompetitions(req: Request, res: Response): Promise<v
   }
 }
 
+export async function getConflicts(
+  _req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const conflicts =
+      await repository.listConflicts();
+
+    res.json(conflicts);
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Não foi possível consultar os conflitos.";
+
+    res.status(500).json({ message });
+  }
+}
 export async function syncFpf(
   req: Request,
   res: Response
