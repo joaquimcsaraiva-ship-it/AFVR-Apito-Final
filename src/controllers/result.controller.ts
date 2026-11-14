@@ -88,6 +88,34 @@ export async function getConflicts(
     res.status(500).json({ message });
   }
 }
+export async function getConflictDetails(
+  req: Request,
+  res: Response
+): Promise<void> {
+
+  const matchId = Number(req.params.matchId);
+
+  if (!Number.isInteger(matchId)) {
+    res.status(400).json({
+      message: "MatchId inválido."
+    });
+    return;
+  }
+
+  const details =
+    await repository.getConflictDetails(
+      matchId
+    );
+
+  if (!details) {
+    res.status(404).json({
+      message: "Jogo não encontrado."
+    });
+    return;
+  }
+
+  res.json(details);
+}
 export async function syncFpf(
   req: Request,
   res: Response

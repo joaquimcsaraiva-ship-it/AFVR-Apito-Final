@@ -1,3 +1,4 @@
+import { getMatchSources } from "./match-source.repository";
 import { resolveMatch } from "../services/conflict-resolution.service";
 import { ResultSource } from "../types/result-source";
 import { SOURCE_PRIORITY } from "../services/source-priority.service";
@@ -98,6 +99,36 @@ export async function listConflicts() {
   );
 
   return result.rows;
+}
+export async function getConflictDetails(
+  matchId: number
+) {
+  const match = await pool.query(
+    `
+      SELECT
+        id,
+        home_team,
+        away_team,
+        official_source,
+        verification_status,
+        conflict_detected
+      FROM matches
+      WHERE id = $1
+    `,
+    [matchId]
+  );
+
+  if (!match.rowCount) {
+    return null;
+  }
+
+  const sources =
+    await getMatchSources(matchId);
+
+  return {
+    ...match.rows[0],
+    sources
+  };
 }
 export async function standingsByCompetition(competitionId: number): Promise<TeamStanding[]> {
   const result = await pool.query<{

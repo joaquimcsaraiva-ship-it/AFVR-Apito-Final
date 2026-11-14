@@ -9,7 +9,11 @@ router.get(
   requireAdmin,
   controller.getConflicts
 );
-
+router.get(
+  "/conflicts/:matchId",
+  requireAdmin,
+  controller.getConflictDetails
+);
 router.get("/", controller.getByCompetition);
 router.get("/standings", controller.getStandings);
 
