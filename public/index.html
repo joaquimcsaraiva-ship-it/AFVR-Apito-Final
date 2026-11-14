@@ -250,6 +250,33 @@
           <div id="standingsList"><div class="empty">Selecione uma competição para consultar a classificação.</div></div>
           <div class="footer" id="standingsFooter"></div>
         </section>
+<section class="panel result-panel">
+  <div class="panel-head">
+    <div>
+      <h2 class="panel-title">Conflitos</h2>
+      <p class="panel-help">
+        Jogos com discrepâncias entre AFVR, FPF e resultados manuais.
+      </p>
+    </div>
+
+    <button
+      class="button button-quiet"
+      id="refreshConflicts"
+      type="button">
+      Atualizar
+    </button>
+  </div>
+
+  <div id="conflictsList">
+    <div class="loading">
+      A carregar conflitos...
+    </div>
+  </div>
+
+  <div class="footer" id="conflictsFooter">
+    Nenhum conflito carregado.
+  </div>
+</section>
         <section class="panel result-panel">
           <div class="panel-head"><div><h2 class="panel-title">Carregamento manual</h2><p class="panel-help">Registe um jogo ou importe vários resultados através de um ficheiro CSV.</p></div></div>
           <div class="manual-grid">
