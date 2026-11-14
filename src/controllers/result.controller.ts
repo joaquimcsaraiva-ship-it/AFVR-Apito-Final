@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
-
+import {
+  fetchAfvrResults
+} from "../services/afvr.service";
 import * as repository from "../repositories/result.repository";
 import {
   fetchFpfCompetitionMatches,
@@ -68,15 +70,36 @@ export async function getFpfCompetitions(req: Request, res: Response): Promise<v
   }
 }
 
-export async function syncFpf(req: Request, res: Response): Promise<void> {
+export async function syncFpf(
+  req: Request,
+  res: Response
+): Promise<void> {
   const parsed = fpfSyncSchema.safeParse(req.body);
+
   if (!parsed.success) {
-    sendValidationError(res, "Selecione uma competição válida da FPF.");
+    sendValidationError(
+      res,
+      "Selecione uma competição válida da FPF."
+    );
     return;
   }
+
   try {
-    const { competition, matches, skipped } = await fetchFpfCompetitionMatches(parsed.data);
-    const saved = await repository.syncFpfResults(parsed.data.associationId, competition, matches);
+    const {
+      competition,
+      matches,
+      skipped
+    } = await fetchFpfCompetitionMatches(
+      parsed.data
+    );
+
+    const saved =
+      await repository.syncFpfResults(
+        parsed.data.associationId,
+        competition,
+        matches
+      );
+
     res.json({
       ...saved,
       competitionName: competition.name,
@@ -84,9 +107,69 @@ export async function syncFpf(req: Request, res: Response): Promise<void> {
       skipped,
       sourceUrl: competition.detailsUrl
     });
+
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Não foi possível sincronizar os resultados da FPF.";
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Não foi possível sincronizar os resultados da FPF.";
+
     res.status(502).json({ message });
+  }
+}
+
+export async function syncAfvr(
+  req: Request,
+  res: Response
+): Promise<void> {
+
+  const parsed = fpfSyncSchema.safeParse(
+    req.body
+  );
+
+  if (!parsed.success) {
+    sendValidationError(
+      res,
+      "Selecione uma competição válida."
+    );
+    return;
+  }
+
+  try {
+
+    const { competition } =
+      await fetchFpfCompetitionMatches(
+        parsed.data
+      );
+
+    const matches =
+      await fetchAfvrResults(
+        parsed.data
+      );
+
+    const saved =
+      await repository.syncAfvrResults(
+        parsed.data.associationId,
+        competition,
+        matches
+      );
+
+    res.json({
+      ...saved,
+      competitionName: competition.name,
+      season: competition.season
+    });
+
+  } catch (error) {
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Não foi possível sincronizar a AFVR.";
+
+    res.status(502).json({
+      message
+    });
   }
 }
 
