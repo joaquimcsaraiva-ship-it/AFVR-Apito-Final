@@ -261,10 +261,12 @@ return saved;
   }
 }
 
-export async function syncFpfResults(
+async function syncExternalResults(
   associationId: number,
   competition: FpfCompetition,
-  matches: FpfMatch[]
+  matches: FpfMatch[],
+source: ResultSource,
+sourcePriority: number
 ): Promise<{ localCompetitionId: number; saved: number }> {
   const client = await pool.connect();
   try {
@@ -391,12 +393,13 @@ const matchId = Number(
 await saveMatchSource(
   client,
   matchId,
-  ResultSource.FPF,
-  SOURCE_PRIORITY.fpf,
+  source,
+  sourcePriority,
   null,
   match.homeScore,
   match.awayScore
 );
+
 const resolution =
   await resolveMatch(matchId);
 
@@ -440,9 +443,26 @@ export async function syncAfvrResults(
   matches: FpfMatch[]
 ): Promise<{ localCompetitionId: number; saved: number }> {
 
-  return syncFpfResults(
+  return syncExternalResults(
     associationId,
     competition,
-    matches
+    matches,
+    ResultSource.AFVR,
+    SOURCE_PRIORITY.afvr
+  );
+}
+
+export async function syncFpfResults(
+  associationId: number,
+  competition: FpfCompetition,
+  matches: FpfMatch[]
+): Promise<{ localCompetitionId: number; saved: number }> {
+
+  return syncExternalResults(
+    associationId,
+    competition,
+    matches,
+    ResultSource.FPF,
+    SOURCE_PRIORITY.fpf
   );
 }
