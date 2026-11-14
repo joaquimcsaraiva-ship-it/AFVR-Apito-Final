@@ -79,7 +79,26 @@ export async function listByCompetition(competitionId: number): Promise<MatchRes
   );
   return result.rows.map(mapMatch);
 }
+export async function listConflicts() {
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        competition_id,
+        home_team,
+        away_team,
+        official_source,
+        verification_status,
+        conflict_detected,
+        played_at
+      FROM matches
+      WHERE conflict_detected = TRUE
+      ORDER BY played_at DESC NULLS LAST
+    `
+  );
 
+  return result.rows;
+}
 export async function standingsByCompetition(competitionId: number): Promise<TeamStanding[]> {
   const result = await pool.query<{
     home_team: string;
