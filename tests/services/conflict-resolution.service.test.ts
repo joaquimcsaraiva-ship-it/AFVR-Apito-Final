@@ -35,6 +35,7 @@ describe("conflict-resolution.service", () => {
 
     expect(result).not.toBeNull();
     expect(result?.conflictDetected).toBe(false);
+    expect(result?.reasons).toEqual([]);
     expect(result?.officialSource).toBe("fpf");
     expect(result?.homeScore).toBe(2);
     expect(result?.awayScore).toBe(1);
@@ -59,6 +60,7 @@ describe("conflict-resolution.service", () => {
     const result = await resolveMatch(1);
 
     expect(result?.conflictDetected).toBe(false);
+    expect(result?.reasons).toEqual([]);
     expect(result?.officialSource).toBe("fpf");
   });
 
@@ -81,6 +83,9 @@ describe("conflict-resolution.service", () => {
     const result = await resolveMatch(1);
 
     expect(result?.conflictDetected).toBe(true);
+    expect(result?.reasons).toContain(
+  "score_mismatch"
+);
     expect(result?.officialSource).toBe("fpf");
   });
 

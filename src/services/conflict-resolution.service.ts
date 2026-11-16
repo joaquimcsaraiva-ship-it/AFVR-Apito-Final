@@ -6,6 +6,8 @@ export interface ResolutionResult {
 
   homeScore: number | null;
   awayScore: number | null;
+
+  reasons: string[];
 }
 export interface DetailedResolutionResult
   extends ResolutionResult {
@@ -50,6 +52,8 @@ return {
   officialSource: winner.source,
 
   homeScore: winner.homeScore,
-  awayScore: winner.awayScore
+  awayScore: winner.awayScore,
+
+  reasons
 };
 }

@@ -280,20 +280,22 @@ if (resolution) {
   await client.query(
     `
       UPDATE matches
-      SET
-        official_source = $2,
-        verification_status = $3,
-        conflict_detected = $4
+SET
+  official_source = $2,
+  verification_status = $3,
+  conflict_detected = $4,
+  conflict_reasons = $5
       WHERE id = $1
     `,
     [
-      savedMatch.id,
-      resolution.officialSource,
-      resolution.conflictDetected
-        ? "conflict"
-        : "official",
-      resolution.conflictDetected
-    ]
+  savedMatch.id,
+  resolution.officialSource,
+  resolution.conflictDetected
+    ? "conflict"
+    : "official",
+  resolution.conflictDetected,
+  JSON.stringify(resolution.reasons)
+]
   );
 }
 saved.push(savedMatch);
