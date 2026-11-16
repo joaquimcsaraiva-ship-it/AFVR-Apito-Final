@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE matches
+ADD COLUMN IF NOT EXISTS conflict_reasons JSONB;
+
+COMMIT;
