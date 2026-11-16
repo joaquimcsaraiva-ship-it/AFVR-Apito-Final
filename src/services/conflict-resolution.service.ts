@@ -7,7 +7,11 @@ export interface ResolutionResult {
   homeScore: number | null;
   awayScore: number | null;
 }
+export interface DetailedResolutionResult
+  extends ResolutionResult {
 
+  reasons: string[];
+}
 export async function resolveMatch(
   matchId: number
 ): Promise<ResolutionResult | null> {
@@ -25,21 +29,27 @@ export async function resolveMatch(
     )
   );
 
-  const conflictDetected =
-    uniqueScores.size > 1;
+ const reasons: string[] = [];
 
-  const winner =
-    [...sources].sort(
-      (a, b) =>
-        b.sourcePriority -
-        a.sourcePriority
-    )[0];
+if (uniqueScores.size > 1) {
+  reasons.push("score_mismatch");
+}
 
-  return {
-    conflictDetected,
-    officialSource: winner.source,
+const conflictDetected =
+  reasons.length > 0;
 
-    homeScore: winner.homeScore,
-    awayScore: winner.awayScore
-  };
+const winner =
+  [...sources].sort(
+    (a, b) =>
+      b.sourcePriority -
+      a.sourcePriority
+  )[0];
+
+return {
+  conflictDetected,
+  officialSource: winner.source,
+
+  homeScore: winner.homeScore,
+  awayScore: winner.awayScore
+};
 }

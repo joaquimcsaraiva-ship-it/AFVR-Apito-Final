@@ -1,87 +1,109 @@
 import { resolveMatch } from "../../src/services/conflict-resolution.service";
-import * as repository from "../../src/repositories/match-source.repository";
-import { ResultSource } from "../../src/types/result-source";
+import { getMatchSources } from "../../src/repositories/match-source.repository";
 
-jest.mock(
-  "../../src/repositories/match-source.repository"
-);
+jest.mock("../../src/repositories/match-source.repository", () => ({
+  getMatchSources: jest.fn()
+}));
+
+const mockedGetMatchSources =
+  getMatchSources as jest.MockedFunction<typeof getMatchSources>;
 
 describe("conflict-resolution.service", () => {
-
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("detecta conflito quando os resultados diferem", async () => {
+  test("devolve null sem fontes", async () => {
+    mockedGetMatchSources.mockResolvedValue([]);
 
-    jest
-      .spyOn(repository, "getMatchSources")
-      .mockResolvedValue([
-        {
-          id: 1,
-          matchId: 10,
-          source: ResultSource.FPF,
-          sourcePriority: 90,
-          sourceUrl: null,
-          homeScore: 3,
-          awayScore: 1,
-          verified: true
-        },
-        {
-          id: 2,
-          matchId: 10,
-          source: ResultSource.MANUAL,
-          sourcePriority: 20,
-          sourceUrl: null,
-          homeScore: 2,
-          awayScore: 2,
-          verified: false
-        }
-      ]);
+    const result = await resolveMatch(1);
 
-    const result = await resolveMatch(10);
+    expect(result).toBeNull();
+  });
 
-    expect(result?.conflictDetected).toBe(true);
-    expect(result?.officialSource).toBe(
-      ResultSource.FPF
-    );
-    expect(result?.homeScore).toBe(3);
+  test("uma única fonte sem conflito", async () => {
+    mockedGetMatchSources.mockResolvedValue([
+      {
+        source: "fpf",
+        sourcePriority: 100,
+        homeScore: 2,
+        awayScore: 1
+      } as any
+    ]);
+
+    const result = await resolveMatch(1);
+
+    expect(result).not.toBeNull();
+    expect(result?.conflictDetected).toBe(false);
+    expect(result?.officialSource).toBe("fpf");
+    expect(result?.homeScore).toBe(2);
     expect(result?.awayScore).toBe(1);
   });
 
-  it("não detecta conflito quando os resultados coincidem", async () => {
+  test("duas fontes iguais sem conflito", async () => {
+    mockedGetMatchSources.mockResolvedValue([
+      {
+        source: "fpf",
+        sourcePriority: 100,
+        homeScore: 2,
+        awayScore: 1
+      } as any,
+      {
+        source: "afvr",
+        sourcePriority: 90,
+        homeScore: 2,
+        awayScore: 1
+      } as any
+    ]);
 
-    jest
-      .spyOn(repository, "getMatchSources")
-      .mockResolvedValue([
-        {
-          id: 1,
-          matchId: 10,
-          source: ResultSource.FPF,
-          sourcePriority: 90,
-          sourceUrl: null,
-          homeScore: 3,
-          awayScore: 1,
-          verified: true
-        },
-        {
-          id: 2,
-          matchId: 10,
-          source: ResultSource.MANUAL,
-          sourcePriority: 20,
-          sourceUrl: null,
-          homeScore: 3,
-          awayScore: 1,
-          verified: false
-        }
-      ]);
-
-    const result = await resolveMatch(10);
+    const result = await resolveMatch(1);
 
     expect(result?.conflictDetected).toBe(false);
-    expect(result?.officialSource).toBe(
-      ResultSource.FPF
-    );
+    expect(result?.officialSource).toBe("fpf");
   });
 
+  test("duas fontes diferentes geram conflito", async () => {
+    mockedGetMatchSources.mockResolvedValue([
+      {
+        source: "fpf",
+        sourcePriority: 100,
+        homeScore: 2,
+        awayScore: 1
+      } as any,
+      {
+        source: "afvr",
+        sourcePriority: 90,
+        homeScore: 1,
+        awayScore: 1
+      } as any
+    ]);
+
+    const result = await resolveMatch(1);
+
+    expect(result?.conflictDetected).toBe(true);
+    expect(result?.officialSource).toBe("fpf");
+  });
+
+  test("manual vence pela prioridade", async () => {
+    mockedGetMatchSources.mockResolvedValue([
+      {
+        source: "manual",
+        sourcePriority: 1000,
+        homeScore: 3,
+        awayScore: 0
+      } as any,
+      {
+        source: "fpf",
+        sourcePriority: 100,
+        homeScore: 2,
+        awayScore: 1
+      } as any
+    ]);
+
+    const result = await resolveMatch(1);
+
+    expect(result?.officialSource).toBe("manual");
+    expect(result?.homeScore).toBe(3);
+    expect(result?.awayScore).toBe(0);
+  });
 });
