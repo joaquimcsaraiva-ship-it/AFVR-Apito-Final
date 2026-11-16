@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: afvr-resultados
+    name: afvr-apito-final
     runtime: node
     plan: free
     buildCommand: "npm ci && npm run build"

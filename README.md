@@ -1,4 +1,4 @@
-# AFVR Resultados
+# AFVR Apito Final
 
 Aplicação web para consultar competições, calendários, jogos, resultados e classificações de futebol e futsal. As alterações administrativas exigem sessão de administrador.
 
