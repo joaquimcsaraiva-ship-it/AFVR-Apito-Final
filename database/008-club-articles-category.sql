@@ -1,0 +1,2 @@
+ALTER TABLE club_articles
+ADD COLUMN IF NOT EXISTS category VARCHAR(50);

@@ -44,13 +44,13 @@ export async function saveMatchSource(
       VALUES ($1, $2, $3, $4, $5, $6)
     `,
     [
-      matchId,
-      source,
-      sourcePriority,
-      sourceUrl,
-      homeScore,
-      awayScore
-    ]
+  matchId,
+  source,
+  sourcePriority,
+  sourceUrl,
+  homeScore,
+  awayScore
+]
   );
 }
 

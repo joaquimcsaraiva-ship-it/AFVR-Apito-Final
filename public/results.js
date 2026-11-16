@@ -60,9 +60,87 @@
     $("#resultsFooter").textContent = `${state.matches.length} ${state.matches.length === 1 ? "jogo registado" : "jogos registados"}. Resultados FPF são sincronizados pela identificação do jogo.`;
   }
 
-  function renderStandings(rows) {
+  function renderConflicts(conflicts) {
+
+  const region = $("#conflictsList");
+
+  if (!conflicts.length) {
+
+    region.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">✓</div>
+        <h3>Sem conflitos</h3>
+        <p>
+          Não existem discrepâncias entre as fontes de resultados.
+        </p>
+      </div>
+    `;
+
+    $("#conflictsFooter").textContent =
+      "Nenhum conflito encontrado.";
+
+    return;
+  }
+
+  region.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Jogo</th>
+            <th>Origem Oficial</th>
+            <th>Estado</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${conflicts.map(conflict => `
+            <tr class="conflict-row">
+              <td>${escapeHtml(conflict.id)}</td>
+
+              <td>
+                <span class="competition-name">
+                  ${escapeHtml(conflict.home_team)}
+                </span>
+
+                <span class="competition-id">
+                  vs.
+                </span>
+
+                <span class="competition-name">
+                  ${escapeHtml(conflict.away_team)}
+                </span>
+              </td>
+
+              <td>
+                ${escapeHtml(conflict.official_source || "—")}
+              </td>
+
+              <td>
+                <span class="badge badge-inactive">
+                  ${escapeHtml(conflict.verification_status || "pendente")}
+                </span>
+              </td>
+
+              <td>
+                ${escapeHtml(formatDate(conflict.played_at))}
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  $("#conflictsFooter").textContent =
+    `${conflicts.length} conflitos encontrados.`;
+}
     const region = $("#standingsList");
-    if (!$("#resultCompetition").value) {
+function renderStandings(rows) {
+  const region = $("#standingsList");
+
+ if (!$("#resultCompetition").value) {
       region.innerHTML = '<div class="empty">Selecione uma competição para consultar a classificação.</div>';
       $("#standingsFooter").textContent = "";
       return;
@@ -88,27 +166,83 @@
     $("#standingsFooter").textContent = `Pontuação calculada com 3 pontos por vitória e 1 por empate, a partir dos jogos registados${groups.size > 1 ? "; classificação separada por zona/grupo" : ""}.`;
   }
 
+  async function loadConflicts() {
+
+  $("#conflictsList").innerHTML =
+    '<div class="loading">A carregar conflitos...</div>';
+
+  try {
+    const conflicts =
+      await api("/api/results/conflicts");
+
+    renderConflicts(conflicts);
+
+  } catch (error) {
+
+    $("#conflictsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
+  }
+}
+
   async function loadMatches() {
-    const competitionId = $("#resultCompetition").value;
-    if (!competitionId) { state.matches = []; renderMatches(); renderStandings([]); return; }
-    $("#resultsList").innerHTML = '<div class="loading">A carregar jogos…</div>';
-    $("#standingsList").innerHTML = '<div class="loading">A calcular classificação…</div>';
-    try {
-      const [matches, standings] = await Promise.all([
+
+  const competitionId =
+    $("#resultCompetition").value;
+
+  if (!competitionId) {
+    state.matches = [];
+    renderMatches();
+    renderStandings([]);
+    return;
+  }
+
+  $("#resultsList").innerHTML =
+    '<div class="loading">A carregar jogos…</div>';
+
+  $("#standingsList").innerHTML =
+    '<div class="loading">A calcular classificação…</div>';
+
+  try {
+
+    const [matches, standings] =
+      await Promise.all([
         api(`/api/results?competitionId=${encodeURIComponent(competitionId)}`),
         api(`/api/results/standings?competitionId=${encodeURIComponent(competitionId)}`)
       ]);
-      state.matches = matches;
-      renderMatches();
-      renderStandings(standings);
-    } catch (error) {
-      $("#resultsList").innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
-      $("#standingsList").innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
-    }
+
+    state.matches = matches;
+
+    renderMatches();
+    renderStandings(standings);
+
+  } catch (error) {
+
+    $("#resultsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
+
+    $("#standingsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
   }
+}
 
   $("#resultCompetition").addEventListener("change", loadMatches);
-  $("#refreshResults").addEventListener("click", loadMatches);
+  $("#refreshResults")
+  .addEventListener(
+    "click",
+    loadMatches
+  );
+
+$("#refreshResults")
+  .addEventListener(
+    "click",
+    loadMatches
+  );
+
+$("#refreshConflicts")
+  ?.addEventListener(
+    "click",
+    loadConflicts
+  );
 
   $("#syncAllFpf").addEventListener("click", async () => {
     const button = $("#syncAllFpf");
@@ -354,7 +488,13 @@
     URL.revokeObjectURL(link.href);
   });
 
-  loadCompetitions().then(renderMatches).catch((error) => {
-    $("#resultsList").innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+  loadCompetitions()
+  .then(renderMatches)
+  .catch((error) => {
+    $("#resultsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
   });
+
+loadConflicts();
+
 })();

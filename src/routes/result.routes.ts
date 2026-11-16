@@ -2,7 +2,8 @@ import { Router } from "express";
 
 import * as controller from "../controllers/result.controller";
 import { requireAdmin } from "../middleware/require-admin";
-
+import { syncClubResults }
+from "../services/club-sync.service";
 const router = Router();
 router.get(
   "/conflicts",
@@ -27,5 +28,12 @@ router.post("/fpf/sync-all", requireAdmin, controller.startFpfBulkSync);
 
 router.post("/manual", requireAdmin, controller.saveManual);
 router.post("/upload", requireAdmin, controller.uploadManual);
-
+router.post(
+  "/clubs/sync",
+  requireAdmin,
+  async (_req, res) => {
+    const result = await syncClubResults();
+    res.json(result);
+  }
+);
 export default router;
