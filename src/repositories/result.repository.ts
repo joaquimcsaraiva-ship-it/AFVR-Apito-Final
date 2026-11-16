@@ -83,16 +83,17 @@ export async function listByCompetition(competitionId: number): Promise<MatchRes
 export async function listConflicts() {
   const result = await pool.query(
     `
-      SELECT
-        id,
-        competition_id,
-        home_team,
-        away_team,
-        official_source,
-        verification_status,
-        conflict_detected,
-        played_at
-      FROM matches
+ SELECT
+  id,
+  competition_id,
+  home_team,
+  away_team,
+  official_source,
+  verification_status,
+  conflict_detected,
+  conflict_reasons,
+  played_at
+FROM matches
       WHERE conflict_detected = TRUE
       ORDER BY played_at DESC NULLS LAST
     `
@@ -105,14 +106,15 @@ export async function getConflictDetails(
 ) {
   const match = await pool.query(
     `
-      SELECT
-        id,
-        home_team,
-        away_team,
-        official_source,
-        verification_status,
-        conflict_detected
-      FROM matches
+SELECT
+  id,
+  home_team,
+  away_team,
+  official_source,
+  verification_status,
+  conflict_detected,
+  conflict_reasons
+FROM matches
       WHERE id = $1
     `,
     [matchId]
