@@ -445,7 +445,12 @@
   <script>
     (() => {
       const API = "/api/competitions";
-      const state = { competitions: [], editingId: null, toastTimer: null };
+      const state = {
+  competitions: [],
+  dashboard: null,
+  editingId: null,
+  toastTimer: null
+};
       const pageKey = location.pathname === "/competitions" ? "competitions" : location.pathname === "/results" ? "results" : "dashboard";
       const $ = (selector) => document.querySelector(selector);
       const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
@@ -643,6 +648,9 @@
         $("#tableRegion").innerHTML = '<div class="loading">A carregar competições…</div>';
         try {
           state.competitions = await request(API);
+
+state.dashboard =
+  await request("/api/results/dashboard");
 
 state.dashboard =
   await request("/results/dashboard");
