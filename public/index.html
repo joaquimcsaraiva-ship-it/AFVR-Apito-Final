@@ -33,7 +33,14 @@
     .layout { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
     .sidebar { background: var(--navy); color: #dbe8f2; padding: 28px 18px; display: flex; flex-direction: column; }
     .brand { display: flex; gap: 12px; align-items: center; padding: 0 10px 36px; color: white; }
-    .brand-mark { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: #1f78b4; font-size: 21px; }
+    .brand-mark {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
     .brand-name { font: 800 17px/1.1 Manrope, sans-serif; letter-spacing: -.4px; }
     .brand-sub { margin-top: 4px; color: #9fb8cb; font-size: 11px; letter-spacing: 1.3px; text-transform: uppercase; }
     .nav-label { padding: 0 12px 10px; color: #7892a8; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
@@ -191,7 +198,7 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-mark">⚽</div>
+        <div class="brand-mark"><img src="/images/logo-afvr-apito-final.png" alt="AFVR Apito Final" class="brand-logo" /></div>
         <div class="brand-copy"><div class="brand-name">AFVR</div><div class="brand-sub">Apito Final</div></div>
       </div>
       <div class="nav-label">Gestão desportiva</div>
@@ -562,3 +569,14 @@
   <script src="/results.js"></script>
 </body>
 </html>
+
+
+<style>
+.brand-logo{
+  width:72px;
+  height:auto;
+  display:block;
+}
+</style>
+
+
