@@ -42,6 +42,50 @@
 
   function renderMatches() {
     const region = $("#resultsList");
+const renderTable = (matches) => `
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Jogo</th>
+<th>Resultado</th>
+<th>Campo</th>
+<th>Origem</th>
+</tr>
+</thead>
+<tbody>
+${matches.map((match) => `
+<tr>
+<td>${escapeHtml(formatDate(match.playedAt))}</td>
+
+<td>
+<span class="competition-name">${escapeHtml(match.homeTeam)}</span>
+<span class="competition-id">vs.</span>
+<span class="competition-name">${escapeHtml(match.awayTeam)}</span>
+</td>
+
+<td>
+${
+match.homeScore == null
+? '<span class="result-tbd">Por jogar</span>'
+: `<span class="result-score">${escapeHtml(match.homeScore)} – ${escapeHtml(match.awayScore)}</span>`
+}
+</td>
+
+<td>${escapeHtml(match.venue || "—")}</td>
+
+<td>
+<span class="source-tag">
+${match.source === "fpf" ? "FPF" : "Manual"}
+</span>
+</td>
+</tr>
+`).join("")}
+</tbody>
+</table>
+</div>
+`;
     if (!$("#resultCompetition").value) {
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
       return;
@@ -50,13 +94,61 @@
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Sem jogos registados</h3><p>Sincronize os jogos da FPF, registe um jogo ou importe um ficheiro CSV.</p></div>';
       return;
     }
-    region.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Data</th><th>Jogo</th><th>Resultado</th><th>Campo</th><th>Origem</th></tr></thead><tbody>${state.matches.map((match) => `<tr>
-      <td>${escapeHtml(formatDate(match.playedAt))}</td>
-      <td><span class="competition-name">${escapeHtml(match.homeTeam)}</span><span class="competition-id">vs.</span><span class="competition-name">${escapeHtml(match.awayTeam)}</span></td>
-      <td>${match.homeScore == null ? '<span class="result-tbd">Por jogar</span>' : `<span class="result-score">${escapeHtml(match.homeScore)} – ${escapeHtml(match.awayScore)}</span>`}</td>
-      <td>${escapeHtml(match.venue || "—")}</td>
-      <td><span class="source-tag">${match.source === "fpf" ? "FPF" : "Manual"}</span></td>
-    </tr>`).join("")}</tbody></table></div>`;
+const now = new Date();
+
+const playedMatches = state.matches
+  .filter(match =>
+    match.playedAt &&
+    new Date(match.playedAt) <= now
+  )
+  .sort(
+    (a, b) =>
+      new Date(b.playedAt) - new Date(a.playedAt)
+  );
+
+const upcomingMatches = state.matches
+  .filter(match =>
+    match.playedAt &&
+    new Date(match.playedAt) > now
+  )
+  .sort(
+    (a, b) =>
+      new Date(a.playedAt) - new Date(b.playedAt)
+  );
+console.log("Matches:", state.matches);
+const matches = [...state.matches].sort(
+  (a, b) =>
+    new Date(b.playedAt || 0) -
+    new Date(a.playedAt || 0)
+);
+
+console.log("Resultados:", playedMatches.length);
+console.log("Próximos:", upcomingMatches.length);
+region.innerHTML = `
+<section class="standings-group">
+  <h3 class="standings-group-title">
+    Últimos Resultados
+  </h3>
+
+  ${
+    playedMatches.length
+      ? renderTable(playedMatches)
+      : '<div class="empty">Sem resultados registados.</div>'
+  }
+</section>
+
+<section class="standings-group">
+  <h3 class="standings-group-title">
+    Próximos Jogos
+  </h3>
+
+  ${
+    upcomingMatches.length
+      ? renderTable(upcomingMatches)
+      : '<div class="empty">Sem jogos agendados.</div>'
+  }
+</section>
+`;
     $("#resultsFooter").textContent = `${state.matches.length} ${state.matches.length === 1 ? "jogo registado" : "jogos registados"}. Resultados FPF são sincronizados pela identificação do jogo.`;
   }
 
@@ -498,3 +590,8 @@ $("#refreshConflicts")
 loadConflicts();
 
 })();
+document
+  .getElementById("themeToggle")
+  ?.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+  });

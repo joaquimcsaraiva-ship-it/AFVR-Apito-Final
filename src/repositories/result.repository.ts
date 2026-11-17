@@ -408,7 +408,60 @@ sourcePriority: number
         }
       }
 
-      const placeholder = placeholderCandidates.rows.shift();
+const scheduledFpfMatch = await client.query<{
+  id: number;
+}>(
+  `
+    SELECT id
+    FROM matches
+    WHERE competition_id = $1
+      AND source = 'fpf'
+      AND status = 'scheduled'
+      AND home_score IS NULL
+      AND away_score IS NULL
+      AND LOWER(home_team) = LOWER($2)
+      AND LOWER(away_team) = LOWER($3)
+      AND DATE(played_at) = DATE($4)
+    LIMIT 1
+    FOR UPDATE
+  `,
+  [
+    localCompetitionId,
+    match.homeTeam,
+    match.awayTeam,
+    match.playedAt
+  ]
+);
+if (scheduledFpfMatch.rowCount) {
+  await client.query(
+    `
+      UPDATE matches
+      SET
+        external_id = $1,
+        group_name = $2,
+        played_at = $3,
+        venue = $4,
+        home_score = $5,
+        away_score = $6,
+        status = $7,
+        updated_at = NOW()
+      WHERE id = $8
+    `,
+    [
+      externalId,
+      match.groupName,
+      match.playedAt,
+      match.venue,
+      match.homeScore,
+      match.awayScore,
+      match.status,
+      scheduledFpfMatch.rows[0].id
+    ]
+  );
+
+  continue;
+}      
+const placeholder = placeholderCandidates.rows.shift();
       if (placeholder) {
         await client.query(
           `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
