@@ -326,9 +326,18 @@ export async function getDashboard(
       .slice(0, 5);
 
   const lastResults =
-    matches
-      .filter(m => m.status === "played")
-      .slice(0, 5);
+  matches
+    .filter(
+      m =>
+        m.home_score !== null &&
+        m.away_score !== null
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.played_at).getTime() -
+        new Date(a.played_at).getTime()
+    )
+    .slice(0, 5);
 
   res.json({
     nextMatches,
