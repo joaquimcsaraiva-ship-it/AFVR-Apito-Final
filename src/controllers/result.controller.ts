@@ -312,3 +312,26 @@ export async function uploadManual(req: Request, res: Response): Promise<void> {
     res.status(message.includes("não existe") ? 404 : 500).json({ message });
   }
 }
+export async function getDashboard(
+  _req: Request,
+  res: Response
+): Promise<void> {
+
+  const matches =
+    await repository.getDashboardSummary();
+
+  const nextMatches =
+    matches
+      .filter(m => m.status === "scheduled")
+      .slice(0, 5);
+
+  const lastResults =
+    matches
+      .filter(m => m.status === "played")
+      .slice(0, 5);
+
+  res.json({
+    nextMatches,
+    lastResults
+  });
+}

@@ -506,17 +506,129 @@
       }
 
       function renderDashboard() {
-        $("#dashboardTotal").textContent = state.competitions.length;
-        $("#dashboardActive").textContent = state.competitions.filter((item) => item.active).length;
-        $("#dashboardSeasons").textContent = new Set(state.competitions.map((item) => item.season)).size;
-        const recent = state.competitions.slice(0, 5);
-        const region = $("#dashboardList");
-        if (!recent.length) {
-          region.innerHTML = `<div class="empty"><div class="empty-icon">▦</div><h3>Comece pela primeira competição</h3><p>Registe uma competição para começar a organizar as épocas e modalidades da associação.</p><a class="button button-primary" href="/competitions">Abrir competições</a></div>`;
-          return;
-        }
-        region.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Competição</th><th>Época</th><th>Modalidade</th><th>Estado</th></tr></thead><tbody>${recent.map((item) => `<tr><td><span class="competition-name">${escapeHtml(item.name)}</span></td><td><span class="season">${escapeHtml(item.season)}</span></td><td><span class="sport">${sportName(item.sport)}</span></td><td><span class="badge ${item.active ? "badge-active" : "badge-inactive"}">${item.active ? "Ativa" : "Inativa"}</span></td></tr>`).join("")}</tbody></table></div>`;
-      }
+
+  $("#dashboardTotal").textContent =
+    state.competitions.length;
+
+  $("#dashboardActive").textContent =
+    state.competitions.filter(item => item.active).length;
+
+  $("#dashboardSeasons").textContent =
+    new Set(
+      state.competitions.map(item => item.season)
+    ).size;
+
+  $("#dashboardMatches").textContent =
+    state.dashboard?.totalMatches ?? "—";
+
+  $("#dashboardSync").textContent =
+    "Ativa";
+
+  const recent =
+    state.competitions.slice(0, 5);
+
+  const region =
+    $("#dashboardList");
+
+  if (!recent.length) {
+    region.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🏆</div>
+        <h3>Comece pela primeira competição</h3>
+        <p>
+          Registe uma competição para começar a organizar
+          as épocas e modalidades da associação.
+        </p>
+        <a class="button button-primary" href="/competitions">
+          Abrir competições
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  region.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Competição</th>
+            <th>Época</th>
+            <th>Modalidade</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${recent.map(item => `
+            <tr>
+              <td>
+                <span class="competition-name">
+                  ${escapeHtml(item.name)}
+                </span>
+              </td>
+              <td>
+                <span class="season">
+                  ${escapeHtml(item.season)}
+                </span>
+              </td>
+              <td>
+                <span class="sport">
+                  ${sportName(item.sport)}
+                </span>
+              </td>
+              <td>
+                <span class="badge ${item.active ? "badge-active" : "badge-inactive"}">
+                  ${item.active ? "Ativa" : "Inativa"}
+                </span>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const nextRegion =
+    $("#dashboardNextMatches");
+
+  if (
+    nextRegion &&
+    state.dashboard?.nextMatches?.length
+  ) {
+    nextRegion.innerHTML =
+      state.dashboard.nextMatches
+        .map(match => `
+          <div class="card-row">
+            <strong>${escapeHtml(match.home_team)}</strong>
+            <span>vs</span>
+            <strong>${escapeHtml(match.away_team)}</strong>
+          </div>
+        `)
+        .join("");
+  }
+
+  const lastRegion =
+    $("#dashboardLastResults");
+
+  if (
+    lastRegion &&
+    state.dashboard?.lastResults?.length
+  ) {
+    lastRegion.innerHTML =
+      state.dashboard.lastResults
+        .map(match => `
+          <div class="card-row">
+            <strong>${escapeHtml(match.home_team)}</strong>
+            ${match.home_score}
+            -
+            ${match.away_score}
+            <strong>${escapeHtml(match.away_team)}</strong>
+          </div>
+        `)
+        .join("");
+  }
+
+}
 
       function toast(message, isError = false) {
         const element = $("#toast");

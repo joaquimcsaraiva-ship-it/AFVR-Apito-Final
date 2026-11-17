@@ -573,3 +573,21 @@ export async function syncFpfResults(
     SOURCE_PRIORITY.fpf
   );
 }
+export async function getDashboardSummary() {
+  const result = await pool.query(`
+    SELECT
+      id,
+      competition_id,
+      home_team,
+      away_team,
+      played_at,
+      home_score,
+      away_score,
+      status
+    FROM matches
+    ORDER BY played_at DESC NULLS LAST
+    LIMIT 200
+  `);
+
+  return result.rows;
+}

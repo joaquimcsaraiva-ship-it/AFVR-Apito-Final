@@ -15,6 +15,10 @@ router.get(
   requireAdmin,
   controller.getConflictDetails
 );
+router.get(
+  "/dashboard",
+  controller.getDashboard
+);
 router.get("/", controller.getByCompetition);
 router.get("/standings", controller.getStandings);
 
