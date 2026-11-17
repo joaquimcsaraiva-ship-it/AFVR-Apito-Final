@@ -238,7 +238,59 @@
   color:#64748b;
   font-size:12px;
 }  
-</style>
+.fixture-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 6px 16px rgba(15,23,42,.08);
+  transition:.2s;
+}
+
+.fixture-card:hover{
+  transform:translateY(-2px);
+}
+
+.fixture-league{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.fixture-teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.fixture-home,
+.fixture-away{
+  flex:1;
+  font-size:18px;
+  font-weight:700;
+}
+
+.fixture-away{
+  text-align:right;
+}
+
+.fixture-vs{
+  background:#d4a017;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.fixture-date{
+  text-align:center;
+  color:#64748b;
+  margin-top:10px;
+}
 </head>
 <body>
   <div class="layout">
@@ -645,9 +697,18 @@
       state.dashboard.nextMatches
         .map(match => `
           <div class="fixture-card">
+
+  <div class="fixture-league">
+    Próximo Jogo
+  </div>
+
   <div class="fixture-teams">
+
     <div class="fixture-home">
-      ${escapeHtml(match.home_team)}
+      ${escapeHtml(
+        match.home_team?.trim() ||
+        "Equipa por definir"
+      )}
     </div>
 
     <div class="fixture-vs">
@@ -655,7 +716,46 @@
     </div>
 
     <div class="fixture-away">
-      ${escapeHtml(match.away_team)}
+      ${escapeHtml(
+        match.away_team?.trim() ||
+        "Equipa por definir"
+      )}
+    </div>
+
+  </div>
+
+  <div class="fixture-date">
+    ${new Date(match.played_at)
+      .toLocaleDateString("pt-PT")}
+    •
+    ${new Date(match.played_at)
+      .toLocaleTimeString(
+        "pt-PT",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      )}
+  </div>
+
+</div>
+  <div class="fixture-teams">
+    <div class="fixture-home">
+      ${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}
+    </div>
+
+    <div class="fixture-vs">
+      VS
+    </div>
+
+    <div class="fixture-away">
+      ${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}
     </div>
   </div>
 
@@ -663,9 +763,15 @@
     ${new Date(match.played_at).toLocaleDateString("pt-PT")}
   </div>
 </div>
-            <strong>${escapeHtml(match.home_team)}</strong>
+            <strong>${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
             <span>vs</span>
-            <strong>${escapeHtml(match.away_team)}</strong>
+            <strong>${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
           </div>
         `)
         .join("");
@@ -682,11 +788,17 @@
       state.dashboard.lastResults
         .map(match => `
           <div class="card-row">
-            <strong>${escapeHtml(match.home_team)}</strong>
+            <strong>${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
             ${match.home_score}
             -
             ${match.away_score}
-            <strong>${escapeHtml(match.away_team)}</strong>
+            <strong>${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
           </div>
         `)
         .join("");
@@ -824,6 +936,112 @@ state.dashboard =
   width:72px;
   height:auto;
   display:block;
+}
+.fixture-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 6px 16px rgba(15,23,42,.08);
+  transition:.2s;
+}
+
+.fixture-card:hover{
+  transform:translateY(-2px);
+}
+
+.fixture-league{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.fixture-teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.fixture-home,
+.fixture-away{
+  flex:1;
+  font-size:18px;
+  font-weight:700;
+}
+
+.fixture-away{
+  text-align:right;
+}
+
+.fixture-vs{
+  background:#d4a017;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.fixture-date{
+  text-align:center;
+  color:#64748b;
+  margin-top:10px;
+}
+.fixture-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 6px 16px rgba(15,23,42,.08);
+  transition:.2s;
+}
+
+.fixture-card:hover{
+  transform:translateY(-2px);
+}
+
+.fixture-league{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.fixture-teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.fixture-home,
+.fixture-away{
+  flex:1;
+  font-size:18px;
+  font-weight:700;
+}
+
+.fixture-away{
+  text-align:right;
+}
+
+.fixture-vs{
+  background:#d4a017;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.fixture-date{
+  text-align:center;
+  color:#64748b;
+  margin-top:10px;
 }
 </style>
 
