@@ -312,19 +312,9 @@ export async function uploadManual(req: Request, res: Response): Promise<void> {
     res.status(message.includes("não existe") ? 404 : 500).json({ message });
   }
 }
-export async function getDashboard(const lastResults =
-  matches
-    .filter(
-      m =>
-        m.home_score !== null ||
-        m.away_score !== null
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.played_at).getTime() -
-        new Date(a.played_at).getTime()
-    )
-    .slice(0, 5);
+export async function getDashboard(
+  _req: Request,
+  res: Response
 ): Promise<void> {
 
   const matches =
@@ -336,20 +326,21 @@ export async function getDashboard(const lastResults =
       .slice(0, 5);
 
   const lastResults =
-  matches
-    .filter(
-      m =>
-        m.home_score !== null &&
-        m.away_score !== null
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.played_at).getTime() -
-        new Date(a.played_at).getTime()
-    )
-    .slice(0, 5);
+    matches
+      .filter(
+        m =>
+          m.home_score !== null &&
+          m.away_score !== null
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.played_at).getTime() -
+          new Date(a.played_at).getTime()
+      )
+      .slice(0, 5);
 
   res.json({
+    totalMatches: matches.length,
     nextMatches,
     lastResults
   });
