@@ -296,15 +296,10 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
-  <div class="brand-mark">
-    <img src="/images/logo-afvr-apito-final.png" alt="AFVR Apito Final" class="brand-logo" />
-  </div>
-  <div class="brand-copy">
-    <div class="brand-name">AFVR APITO FINAL</div>
-  </div>
-</div>
-
-<div class="nav-label">Gestão desportiva</div>
+        <div class="brand-mark"><img src="/images/logo-afvr-apito-final.png" alt="AFVR Apito Final" class="brand-logo" /></div>
+        <div class="brand-copy"><<div class="brand-name">AFVR APITO FINAL</div></div>
+      </div>
+      <div class="nav-label">Gestão desportiva</div>
       <a class="nav-item" id="dashboardNav" href="/" aria-current="page"><span class="nav-icon">⌂</span><span class="nav-text">Visão geral</span></a>
       <a class="nav-item" id="competitionsNav" href="/competitions"><span class="nav-icon">▦</span><span class="nav-text">Competições</span></a>
       <a class="nav-item" id="resultsNav" href="/results"><span class="nav-icon">◷</span><span class="nav-text">Resultados</span></a>
@@ -690,110 +685,127 @@
       </table>
     </div>
   `;
-const nextRegion =
-  $("#dashboardNextMatches");
 
-if (nextRegion) {
+  const nextRegion =
+    $("#dashboardNextMatches");
 
-  if (!state.dashboard?.nextMatches?.length) {
-
-    nextRegion.innerHTML = `
-      <div class="empty">
-        Nenhum jogo agendado.
-      </div>
-    `;
-
-  } else {
-
+  if (
+    nextRegion &&
+    state.dashboard?.nextMatches?.length
+  ) {
     nextRegion.innerHTML =
       state.dashboard.nextMatches
         .map(match => `
-
           <div class="fixture-card">
 
-            <div class="fixture-league">
-              Competição #${match.competition_id}
-            </div>
+  <div class="fixture-league">
+    Próximo Jogo
+  </div>
 
-            <div class="fixture-teams">
+  <div class="fixture-teams">
 
-              <div class="fixture-home">
-                ${escapeHtml(
-                  match.home_team ||
-                  "Equipa por definir"
-                )}
-              </div>
+    <div class="fixture-home">
+      ${escapeHtml(
+        match.home_team?.trim() ||
+        "Equipa por definir"
+      )}
+    </div>
 
-              <div class="fixture-vs">
-                VS
-              </div>
+    <div class="fixture-vs">
+      VS
+    </div>
 
-              <div class="fixture-away">
-                ${escapeHtml(
-                  match.away_team ||
-                  "Equipa por definir"
-                )}
-              </div>
+    <div class="fixture-away">
+      ${escapeHtml(
+        match.away_team?.trim() ||
+        "Equipa por definir"
+      )}
+    </div>
 
-            </div>
+  </div>
 
-            <div class="fixture-date">
-              ${new Date(match.played_at)
-                .toLocaleDateString("pt-PT")}
-            </div>
+  <div class="fixture-date">
+    ${new Date(match.played_at)
+      .toLocaleDateString("pt-PT")}
+    •
+    ${new Date(match.played_at)
+      .toLocaleTimeString(
+        "pt-PT",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      )}
+  </div>
 
+</div>
+  <div class="fixture-teams">
+    <div class="fixture-home">
+      ${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}
+    </div>
+
+    <div class="fixture-vs">
+      VS
+    </div>
+
+    <div class="fixture-away">
+      ${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}
+    </div>
+  </div>
+
+  <div class="fixture-date">
+    ${new Date(match.played_at).toLocaleDateString("pt-PT")}
+  </div>
+</div>
+            <strong>${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
+            <span>vs</span>
+            <strong>${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
           </div>
-
         `)
         .join("");
   }
-}
 
   const lastRegion =
-  $("#dashboardLastResults");
+    $("#dashboardLastResults");
 
-if (lastRegion) {
-
-  if (!state.dashboard?.lastResults?.length) {
-
-    lastRegion.innerHTML = `
-      <div class="empty">
-        Nenhum resultado disponível.
-      </div>
-    `;
-
-  } else {
-
+  if (
+    lastRegion &&
+    state.dashboard?.lastResults?.length
+  ) {
     lastRegion.innerHTML =
       state.dashboard.lastResults
         .map(match => `
-
-          <div class="result-card">
-
-            <div class="result-row">
-
-              <div class="result-team">
-                ${escapeHtml(match.home_team)}
-              </div>
-
-              <div class="result-score">
-                ${match.home_score}
-                -
-                ${match.away_score}
-              </div>
-
-              <div class="result-team result-team-right">
-                ${escapeHtml(match.away_team)}
-              </div>
-
-            </div>
-
+          <div class="card-row">
+            <strong>${escapeHtml(
+  match.home_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
+            ${match.home_score}
+            -
+            ${match.away_score}
+            <strong>${escapeHtml(
+  match.away_team?.trim() ||
+  "Equipa por definir"
+)}</strong>
           </div>
-
         `)
         .join("");
   }
+
 }
+
       function toast(message, isError = false) {
         const element = $("#toast");
         element.textContent = message;
@@ -807,6 +819,9 @@ if (lastRegion) {
         $("#tableRegion").innerHTML = '<div class="loading">A carregar competições…</div>';
         try {
           state.competitions = await request(API);
+
+state.dashboard =
+  await request("/api/results/dashboard");
 
 state.dashboard =
   await request("/api/results/dashboard");
