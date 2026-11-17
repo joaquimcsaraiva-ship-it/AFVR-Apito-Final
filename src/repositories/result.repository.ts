@@ -586,7 +586,7 @@ export async function getDashboardSummary() {
       status
     FROM matches
     ORDER BY played_at DESC NULLS LAST
-    LIMIT 200
+    LIMIT 5000
   `);
 
   return result.rows;
