@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <title>AFVR Resultados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #102a43;
+      --muted: #718096;
+      --line: #e7edf2;
+      --surface: #fff;
+      --canvas: #f5f7f9;
+      --navy: #102a43;
+      --blue: #1769aa;
+      --blue-soft: #e8f3fb;
+      --green: #18794e;
+      --green-soft: #e8f5ee;
+      --amber: #a9600b;
+      --amber-soft: #fff4df;
+      --red: #b42318;
+      --shadow: 0 20px 60px rgba(16, 42, 67, .16);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font: 15px/1.5 "DM Sans", sans-serif; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .layout { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+    .sidebar { background: var(--navy); color: #dbe8f2; padding: 28px 18px; display: flex; flex-direction: column; }
+    .brand { display: flex; gap: 12px; align-items: center; padding: 0 10px 36px; color: white; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: #1f78b4; font-size: 21px; }
+    .brand-name { font: 800 17px/1.1 Manrope, sans-serif; letter-spacing: -.4px; }
+    .brand-sub { margin-top: 4px; color: #9fb8cb; font-size: 11px; letter-spacing: 1.3px; text-transform: uppercase; }
+    .nav-label { padding: 0 12px 10px; color: #7892a8; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .nav-item { display: flex; gap: 12px; align-items: center; margin: 3px 0; padding: 11px 13px; border-radius: 9px; color: #dbe8f2; text-decoration: none; }
+    .nav-item.active { background: #1b4665; color: #fff; }
+    .nav-icon { width: 20px; text-align: center; font-size: 17px; }
+    .sidebar-note { margin-top: auto; padding: 15px 13px; border: 1px solid #31516a; border-radius: 12px; color: #a9bfd0; font-size: 12px; }
+    .sidebar-note strong { display: block; color: white; font-size: 13px; margin-bottom: 4px; }
+    main { min-width: 0; }
+    .topbar { height: 76px; padding: 0 clamp(22px, 4vw, 54px); background: var(--surface); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+    .breadcrumb { color: var(--muted); font-size: 13px; }
+    .breadcrumb strong { color: var(--ink); font-weight: 600; }
+    .user { display: flex; align-items: center; gap: 10px; color: #475569; font-size: 13px; }
+    .avatar { width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; background: #dbeaf4; color: #174b70; font-weight: 700; }
+    .content { max-width: 1440px; margin: 0 auto; padding: 38px clamp(22px, 4vw, 54px) 56px; }
+    .heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 28px; }
+    .eyebrow { color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+    h1 { margin: 5px 0 5px; font: 800 clamp(27px, 3vw, 36px)/1.15 Manrope, sans-serif; letter-spacing: -1.2px; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .button { min-height: 43px; padding: 0 16px; border: 1px solid transparent; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; transition: .15s ease; }
+    .button-primary { background: var(--blue); color: white; box-shadow: 0 4px 10px #1769aa25; }
+    .button-primary:hover { background: #0e568e; }
+    .button-quiet { color: #526477; background: white; border-color: var(--line); }
+    .button-quiet:hover { background: #f6f9fb; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat { padding: 19px 21px; background: white; border: 1px solid var(--line); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .stat-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .stat-value { margin-top: 3px; font: 800 27px/1.2 Manrope, sans-serif; }
+    .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-size: 19px; }
+    .stat:nth-child(2) .stat-icon { background: var(--green-soft); color: var(--green); }
+    .stat:nth-child(3) .stat-icon { background: var(--amber-soft); color: var(--amber); }
+    .panel { background: white; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .panel-head { padding: 19px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .panel-title { margin: 0; font: 700 16px Manrope, sans-serif; }
+    .panel-help { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .result-panel { margin-bottom: 18px; }
+    .source-tag { padding: 6px 10px; border-radius: 20px; color: #175883; background: var(--blue-soft); font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .sync-controls { padding: 19px 22px 15px; }
+    .sync-fields { display: flex; align-items: flex-end; gap: 12px; }
+    .sync-fields .form-row { flex: 0 0 150px; margin-bottom: 8px; }
+    .sync-fields .grow { flex: 1 1 auto; }
+    .sync-selection { margin-top: 12px; }
+    .result-message { min-height: 18px; margin: 4px 0; color: var(--muted); font-size: 12px; }
+    .fpf-note { margin: 5px 0 0; color: #718096; font-size: 11px; }
+    .fpf-note a { color: var(--blue); }
+    .manual-grid { padding: 20px 22px 24px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 30px; }
+    .manual-form h3, .upload-box h3 { margin: 0 0 14px; font: 700 14px Manrope, sans-serif; }
+    .manual-form .form-grid { gap: 0 13px; }
+    .upload-box { padding: 18px; border: 1px dashed #c8d7e2; border-radius: 10px; background: #fbfdfe; }
+    .upload-box p { color: var(--muted); font-size: 12px; }
+    .upload-box code { color: #174b70; font-size: 11px; }
+    .upload-drop { min-height: 112px; margin-top: 13px; padding: 16px; border-radius: 8px; background: white; border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; cursor: pointer; }
+    .upload-drop:hover { border-color: #79afd2; background: #f8fcff; }
+    .upload-drop strong { font-size: 12px; }
+    .upload-drop span:last-child { color: var(--muted); font-size: 10px; }
+    .upload-icon { color: var(--blue); font-size: 20px; }
+    .preview-table { margin-top: 12px; max-height: 200px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+    .preview-table table { font-size: 11px; }
+    .preview-table th, .preview-table td { padding: 7px 8px; }
+    .preview-actions { margin-top: 9px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .preview-error { color: var(--red) !important; }
+    .result-score { font: 800 15px Manrope, sans-serif; white-space: nowrap; }
+    .result-tbd { color: #8b9aaa; font-size: 12px; }
+    .count { margin-left: 7px; padding: 3px 8px; border-radius: 20px; background: #f0f4f7; color: #5b7083; font: 600 11px "DM Sans", sans-serif; }
+    .filters { display: flex; gap: 9px; align-items: center; }
+    .search { position: relative; }
+    .search span { position: absolute; left: 12px; top: 9px; color: #8b9aaa; }
+    .search input { width: 220px; padding-left: 34px; }
+    .field { width: 100%; height: 40px; padding: 0 11px; border: 1px solid #d8e1e8; border-radius: 7px; background: white; color: var(--ink); outline: none; }
+    .field:focus { border-color: #4a94c9; box-shadow: 0 0 0 3px #1769aa1c; }
+    .filters select { width: 142px; }
+    .table-wrap { overflow-x: auto; }
+    .standings-group + .standings-group { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .standings-group-title { margin: 0 0 10px; color: var(--ink); font: 700 14px Manrope, sans-serif; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 12px 20px; color: #8291a0; background: #fbfcfd; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    td { padding: 15px 20px; border-top: 1px solid #eef2f5; vertical-align: middle; }
+    tr:hover td { background: #fcfdfe; }
+    .competition-name { font-weight: 700; }
+    .competition-id { display: block; margin-top: 2px; color: #98a5b2; font-size: 11px; }
+    .season { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .sport { display: inline-flex; gap: 7px; align-items: center; color: #526477; }
+    .sport-icon { width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; background: #f0f4f7; font-size: 12px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
+    .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .badge-active { color: var(--green); background: var(--green-soft); }
+    .badge-inactive { color: #65758b; background: #eef1f4; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+    .icon-button { width: 32px; height: 32px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #718096; }
+    .icon-button:hover { color: var(--blue); background: var(--blue-soft); }
+    .icon-button.delete:hover { color: var(--red); background: #fff0ee; }
+    .empty, .loading, .error { padding: 56px 20px; text-align: center; }
+    .empty-icon { width: 54px; height: 54px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-size: 24px; }
+    .empty h3 { margin: 0 0 5px; font: 700 17px Manrope, sans-serif; }
+    .empty p { max-width: 370px; margin: 0 auto 18px; color: var(--muted); font-size: 13px; }
+    .loading, .error { color: var(--muted); }
+    .error { color: var(--red); }
+    .footer { padding: 14px 21px; border-top: 1px solid var(--line); color: #8795a3; font-size: 11px; }
+    .toast { position: fixed; right: 24px; bottom: 24px; z-index: 5; max-width: min(400px, calc(100vw - 32px)); padding: 13px 17px; border-radius: 9px; color: white; background: var(--navy); box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #9e2f27; color: white; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 10; padding: 20px; background: #0b1f31a3; display: grid; place-items: center; }
+    .modal { width: min(500px, 100%); border-radius: 14px; background: white; box-shadow: var(--shadow); overflow: hidden; }
+    .modal-head { padding: 22px 24px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; }
+    .modal-head h2 { margin: 0; font: 800 20px Manrope, sans-serif; }
+    .modal-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .modal-close { border: 0; background: transparent; color: #8795a3; font-size: 21px; }
+    .form { padding: 20px 24px 24px; }
+    .form-row { margin-bottom: 15px; }
+    .form-row label { display: block; margin-bottom: 6px; color: #40566b; font-size: 12px; font-weight: 700; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .check-row { display: flex; align-items: center; gap: 9px; color: #40566b; font-size: 13px; }
+    .check-row input { accent-color: var(--blue); width: 16px; height: 16px; }
+    .form-error { min-height: 20px; margin: 0 0 9px; color: var(--red); font-size: 12px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 9px; padding-top: 8px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 950px) {
+      .layout { grid-template-columns: 72px minmax(0, 1fr); }
+      .sidebar { padding: 22px 10px; align-items: center; }
+      .brand { padding: 0 0 34px; }
+      .brand-copy, .nav-label, .nav-text, .sidebar-note { display: none; }
+      .nav-item { justify-content: center; width: 48px; padding: 12px 0; }
+      .nav-icon { font-size: 19px; }
+      .filters { flex-wrap: wrap; justify-content: flex-end; }
+      .search input { width: 190px; }
+      .manual-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .layout { display: block; }
+      .sidebar { display: none; }
+      .topbar { height: 58px; padding: 0 18px; }
+      .content { padding: 27px 16px 40px; }
+      .heading { align-items: flex-start; flex-direction: column; }
+      .heading .button { width: 100%; }
+      .stats { gap: 8px; }
+      .stat { padding: 13px 12px; align-items: flex-start; }
+      .stat-icon { display: none; }
+      .stat-label { font-size: 10px; }
+      .stat-value { font-size: 22px; }
+      .panel-head { align-items: flex-start; flex-direction: column; padding: 16px; }
+      .filters { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+      .search { grid-column: 1 / -1; }
+      .search input, .filters select { width: 100%; }
+      th, td { padding: 12px 13px; }
+      th:nth-child(3), td:nth-child(3) { display: none; }
+      .user span { display: none; }
+      .form-grid { grid-template-columns: 1fr; gap: 0; }
+      .sync-fields { align-items: stretch; flex-direction: column; }
+      .sync-fields .form-row { flex: auto; }
+      .sync-fields .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">⚽</div>
+        <div class="brand-copy"><div class="brand-name">AFVR</div><div class="brand-sub">Resultados</div></div>
+      </div>
+      <div class="nav-label">Gestão desportiva</div>
+      <a class="nav-item" id="dashboardNav" href="/" aria-current="page"><span class="nav-icon">⌂</span><span class="nav-text">Visão geral</span></a>
+      <a class="nav-item" id="competitionsNav" href="/competitions"><span class="nav-icon">▦</span><span class="nav-text">Competições</span></a>
+      <a class="nav-item" id="resultsNav" href="/results"><span class="nav-icon">◷</span><span class="nav-text">Resultados</span></a>
+      <div class="sidebar-note"><strong>AFVR Resultados</strong>Gestão de competições e épocas desportivas.</div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div class="breadcrumb">Gestão desportiva <span aria-hidden="true">/</span> <strong id="breadcrumbCurrent">Visão geral</strong></div>
+        <div class="user"><div class="avatar">A</div><span id="authUserText">Consulta pública</span><button class="button button-quiet" id="loginButton" type="button">Entrar na gestão</button><button class="button button-quiet" id="logoutButton" type="button" hidden>Sair</button></div>
+      </header>
+      <section class="content" id="dashboardPage" hidden>
+        <div class="heading">
+          <div><div class="eyebrow">AFVR Resultados</div><h1>Visão geral</h1><p class="subtitle">Acompanhe a atividade desportiva numa só vista.</p></div>
+          <a class="button button-primary" href="/competitions"><span aria-hidden="true">▦</span> Gerir competições</a>
+        </div>
+        <section class="stats" aria-label="Resumo da plataforma">
+          <article class="stat"><div><div class="stat-label">Competições registadas</div><div class="stat-value" id="dashboardTotal">—</div></div><div class="stat-icon">▦</div></article>
+          <article class="stat"><div><div class="stat-label">Competições ativas</div><div class="stat-value" id="dashboardActive">—</div></div><div class="stat-icon">✓</div></article>
+          <article class="stat"><div><div class="stat-label">Épocas disponíveis</div><div class="stat-value" id="dashboardSeasons">—</div></div><div class="stat-icon">◷</div></article>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
+          <div id="dashboardList"><div class="loading">A carregar resumo…</div></div>
+          <div class="footer">Os dados são atualizados a partir da base de dados do AFVR Resultados.</div>
+        </section>
+      </section>
+
+      <section class="content" id="resultsPage" hidden>
+        <div class="heading">
+          <div><div class="eyebrow">Jogos e classificações</div><h1>Resultados</h1><p class="subtitle">Sincronize jogos da FPF ou registe resultados manualmente.</p></div>
+        </div>
+        <section class="panel result-panel">
+          <div class="panel-head"><div><h2 class="panel-title">Sincronizar com a FPF</h2><p class="panel-help">Escolha uma competição do catálogo e atualize os seus jogos e resultados.</p></div><span class="source-tag">FPF · A.F. Vila Real</span></div>
+          <div class="sync-controls">
+            <div class="sync-fields">
+              <div class="form-row"><label for="fpfAssociation">Associação</label><input class="field" id="fpfAssociation" type="number" min="1" value="236"></div>
+              <div class="form-row"><label for="fpfSeason">Época (ID FPF)</label><input class="field" id="fpfSeason" type="number" min="1" value="106"></div>
+              <button class="button button-quiet" id="findFpfCompetitions">Carregar competições</button>
+              <button class="button button-primary" id="syncAllFpf" type="button">Sincronizar todas da época</button>
+            </div>
+            <div class="sync-fields sync-selection" id="fpfCompetitionControls" hidden>
+              <div class="form-row grow"><label for="fpfCompetition">Competição FPF</label><select class="field" id="fpfCompetition"><option value="">Selecione uma competição</option></select></div>
+              <button class="button button-primary" id="syncFpf">Sincronizar jogos</button>
+            </div>
+            <p class="result-message" id="fpfMessage" role="status"></p>
+            <p class="result-message" id="fpfBulkMessage" role="status"></p>
+            <p class="fpf-note">Os resultados são importados do Centro de Resultados da FPF. A FPF indica que só se tornam oficiais 15 dias após cada encontro. <a href="https://centroderesultados-as-prd.azurewebsites.net/Competition/GetCompetitionsByAssociation?associationId=236&amp;seasonId=106" target="_blank" rel="noreferrer">Abrir catálogo FPF</a></p>
+          </div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-head"><div><h2 class="panel-title">Classificação</h2><p class="panel-help">Calculada a partir dos resultados sincronizados nesta competição.</p></div></div>
+          <div id="standingsList"><div class="empty">Selecione uma competição para consultar a classificação.</div></div>
+          <div class="footer" id="standingsFooter"></div>
+        </section>
+<section class="panel result-panel">
+  <div class="panel-head">
+    <div>
+      <h2 class="panel-title">Conflitos</h2>
+      <p class="panel-help">
+        Jogos com discrepâncias entre AFVR, FPF e resultados manuais.
+      </p>
+    </div>
+
+    <button
+      class="button button-quiet"
+      id="refreshConflicts"
+      type="button">
+      Atualizar
+    </button>
+  </div>
+
+  <div id="conflictsList">
+    <div class="loading">
+      A carregar conflitos...
+    </div>
+  </div>
+
+  <div class="footer" id="conflictsFooter">
+    Nenhum conflito carregado.
+  </div>
+</section>
+        <section class="panel result-panel">
+          <div class="panel-head"><div><h2 class="panel-title">Carregamento manual</h2><p class="panel-help">Registe um jogo ou importe vários resultados através de um ficheiro CSV.</p></div></div>
+          <div class="manual-grid">
+            <form class="manual-form" id="manualMatchForm">
+              <h3>Registar jogo</h3>
+              <div class="form-row"><label for="resultCompetition">Competição</label><select class="field" id="resultCompetition" required><option value="">Selecione uma competição</option></select></div>
+              <div class="form-grid">
+                <div class="form-row"><label for="homeTeam">Equipa da casa</label><input class="field" id="homeTeam" required maxlength="180"></div>
+                <div class="form-row"><label for="awayTeam">Equipa visitante</label><input class="field" id="awayTeam" required maxlength="180"></div>
+                <div class="form-row"><label for="matchDate">Data e hora</label><input class="field" id="matchDate" type="datetime-local"></div>
+                <div class="form-row"><label for="matchVenue">Campo</label><input class="field" id="matchVenue" maxlength="250"></div>
+                <div class="form-row"><label for="homeScore">Golos casa</label><input class="field" id="homeScore" type="number" min="0" inputmode="numeric"></div>
+                <div class="form-row"><label for="awayScore">Golos visitante</label><input class="field" id="awayScore" type="number" min="0" inputmode="numeric"></div>
+              </div>
+              <p class="result-message" id="manualMessage" role="status"></p>
+              <button class="button button-primary" type="submit">Guardar jogo</button>
+            </form>
+            <div class="upload-box">
+              <h3>Importar ficheiro CSV</h3>
+              <p>Colunas: <code>data,equipa_casa,equipa_visitante,golos_casa,golos_visitante,local</code>. A data aceita <code>AAAA-MM-DD</code> ou <code>DD/MM/AAAA</code>.</p>
+              <button class="button button-quiet" id="downloadCsvTemplate" type="button">Descarregar modelo CSV</button>
+              <label class="upload-drop" for="csvFile"><span class="upload-icon">↑</span><strong>Escolher ficheiro CSV</strong><span>Confirme a pré-visualização antes de importar.</span></label>
+              <input id="csvFile" type="file" accept=".csv,text/csv" hidden>
+              <div id="csvPreview"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-head"><div><h2 class="panel-title">Jogos da competição</h2><p class="panel-help">Consulte jogos agendados e resultados registados.</p></div><button class="button button-quiet" id="refreshResults" type="button">Atualizar</button></div>
+          <div id="resultsList"><div class="loading">Selecione uma competição para ver os jogos.</div></div>
+          <div class="footer" id="resultsFooter">Fonte identificada em cada registo: FPF ou manual.</div>
+        </section>
+      </section>
+
+      <section class="content" id="competitionsPage" hidden>
+        <div class="heading">
+          <div><div class="eyebrow">Área de gestão</div><h1>Competições</h1><p class="subtitle">Organize as provas e épocas desportivas da associação.</p></div>
+          <button class="button button-primary" id="newCompetition"><span aria-hidden="true">＋</span> Nova competição</button>
+        </div>
+
+        <section class="stats" aria-label="Resumo das competições">
+          <article class="stat"><div><div class="stat-label">Total de competições</div><div class="stat-value" id="totalCount">—</div></div><div class="stat-icon">▦</div></article>
+          <article class="stat"><div><div class="stat-label">Ativas</div><div class="stat-value" id="activeCount">—</div></div><div class="stat-icon">✓</div></article>
+          <article class="stat"><div><div class="stat-label">Modalidades</div><div class="stat-value" id="sportCount">—</div></div><div class="stat-icon">⚽</div></article>
+        </section>
+
+        <section class="panel" aria-labelledby="listTitle">
+          <div class="panel-head">
+            <h2 class="panel-title" id="listTitle">Todas as competições <span class="count" id="listCount">0</span></h2>
+            <div class="filters">
+              <label class="search"><span aria-hidden="true">⌕</span><input class="field" id="search" type="search" placeholder="Pesquisar competição…" aria-label="Pesquisar competição"></label>
+              <select class="field" id="seasonFilter" aria-label="Filtrar por época"><option value="">Todas as épocas</option></select>
+              <select class="field" id="sportFilter" aria-label="Filtrar por modalidade"><option value="">Todas as modalidades</option><option value="football">Futebol</option><option value="futsal">Futsal</option></select>
+            </div>
+          </div>
+          <div id="tableRegion"><div class="loading">A carregar competições…</div></div>
+          <div class="footer" id="listFooter">Dados ligados à base de dados do AFVR Resultados.</div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><h2 id="modalTitle">Nova competição</h2><p>Preencha os dados da prova desportiva.</p></div><button class="modal-close" id="closeModal" aria-label="Fechar">×</button></div>
+      <form class="form" id="competitionForm">
+        <div class="form-row"><label for="name">Nome da competição</label><input class="field" id="name" name="name" maxlength="150" required placeholder="Ex.: Campeonato Distrital"></div>
+        <div class="form-grid">
+          <div class="form-row"><label for="season">Época</label><input class="field" id="season" name="season" required pattern="\d{4}/\d{4}" placeholder="2026/2027"></div>
+          <div class="form-row"><label for="sport">Modalidade</label><select class="field" id="sport" name="sport" required><option value="football">Futebol</option><option value="futsal">Futsal</option></select></div>
+        </div>
+        <label class="check-row"><input type="checkbox" id="active" name="active" checked> Competição ativa</label>
+        <p class="form-error" id="formError" role="alert"></p>
+        <div class="form-actions"><button class="button button-quiet" type="button" id="cancelModal">Cancelar</button><button class="button button-primary" id="saveCompetition" type="submit">Guardar competição</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="authBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal-head"><div><h2 id="authTitle">Acesso à gestão</h2><p>Entre para sincronizar jogos ou alterar os dados.</p></div><button class="modal-close" id="closeAuthModal" type="button" aria-label="Fechar">×</button></div>
+      <form class="form" id="authForm">
+        <div class="form-row"><label for="authUsername">Utilizador</label><input class="field" id="authUsername" name="username" autocomplete="username" required maxlength="80"></div>
+        <div class="form-row"><label for="authPassword">Palavra-passe</label><input class="field" id="authPassword" name="password" type="password" autocomplete="current-password" required maxlength="200"></div>
+        <p class="form-error" id="authError" role="alert"></p>
+        <div class="form-actions"><button class="button button-quiet" id="cancelAuth" type="button">Cancelar</button><button class="button button-primary" id="submitAuth" type="submit">Entrar</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/auth.js"></script>
+  <script>
+    (() => {
+      const API = "/api/competitions";
+      const state = { competitions: [], editingId: null, toastTimer: null };
+      const pageKey = location.pathname === "/competitions" ? "competitions" : location.pathname === "/results" ? "results" : "dashboard";
+      const $ = (selector) => document.querySelector(selector);
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+      const sportName = (sport) => sport === "futsal" ? "Futsal" : "Futebol";
+
+      async function request(url, options = {}) {
+        const response = await fetch(url, { headers: { "Content-Type": "application/json", ...(options.headers || {}) }, ...options });
+        if (!response.ok) {
+          let message = "O pedido não foi concluído.";
+          try { const data = await response.json(); message = data.message || message; } catch { /* respostas HTML ou vazias */ }
+          if (response.status === 401) window.AFVRAuth?.openLogin(message);
+          if (response.status >= 500) message = "O servidor não conseguiu carregar os dados. Confirme a base de dados e tente novamente.";
+          throw new Error(message);
+        }
+        return response.status === 204 ? null : response.json();
+      }
+
+      function visibleCompetitions() {
+        const query = $("#search").value.trim().toLocaleLowerCase("pt-PT");
+        const season = $("#seasonFilter").value;
+        const sport = $("#sportFilter").value;
+        return state.competitions.filter((item) =>
+          (!query || item.name.toLocaleLowerCase("pt-PT").includes(query)) &&
+          (!season || item.season === season) && (!sport || item.sport === sport)
+        );
+      }
+
+      function render() {
+        const items = visibleCompetitions();
+        renderDashboard();
+        $("#totalCount").textContent = state.competitions.length;
+        $("#activeCount").textContent = state.competitions.filter((item) => item.active).length;
+        $("#sportCount").textContent = new Set(state.competitions.map((item) => item.sport)).size;
+        $("#listCount").textContent = items.length;
+        const seasons = [...new Set(state.competitions.map((item) => item.season))].sort().reverse();
+        const filter = $("#seasonFilter");
+        const selectedSeason = filter.value;
+        filter.innerHTML = '<option value="">Todas as épocas</option>' + seasons.map((season) => `<option value="${escapeHtml(season)}">${escapeHtml(season)}</option>`).join("");
+        if (seasons.includes(selectedSeason)) filter.value = selectedSeason;
+
+        const region = $("#tableRegion");
+        if (!state.competitions.length) {
+          region.innerHTML = `<div class="empty"><div class="empty-icon">＋</div><h3>Ainda não há competições</h3><p>Comece por registar a primeira competição para organizar as épocas e modalidades.</p><button class="button button-primary" data-action="new">Criar primeira competição</button></div>`;
+          return;
+        }
+        if (!items.length) {
+          region.innerHTML = `<div class="empty"><div class="empty-icon">⌕</div><h3>Não encontrámos resultados</h3><p>Altere a pesquisa ou os filtros para ver outras competições.</p><button class="button button-quiet" data-action="clear">Limpar filtros</button></div>`;
+          return;
+        }
+        region.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Competição</th><th>Época</th><th>Modalidade</th><th>Estado</th><th><span class="sr-only">Ações</span></th></tr></thead><tbody>${items.map((item) => `<tr>
+          <td><span class="competition-name">${escapeHtml(item.name)}</span><span class="competition-id">ID ${escapeHtml(item.id)}</span></td>
+          <td><span class="season">${escapeHtml(item.season)}</span></td>
+          <td><span class="sport"><span class="sport-icon">${item.sport === "futsal" ? "◉" : "⚽"}</span>${sportName(item.sport)}</span></td>
+          <td><span class="badge ${item.active ? "badge-active" : "badge-inactive"}">${item.active ? "Ativa" : "Inativa"}</span></td>
+          <td><div class="row-actions"><button class="icon-button" data-action="toggle" data-id="${escapeHtml(item.id)}" title="${item.active ? "Desativar" : "Ativar"}" aria-label="${item.active ? "Desativar" : "Ativar"} ${escapeHtml(item.name)}">${item.active ? "◉" : "○"}</button><button class="icon-button" data-action="edit" data-id="${escapeHtml(item.id)}" title="Editar" aria-label="Editar ${escapeHtml(item.name)}">✎</button><button class="icon-button delete" data-action="delete" data-id="${escapeHtml(item.id)}" title="Eliminar" aria-label="Eliminar ${escapeHtml(item.name)}">⌫</button></div></td>
+        </tr>`).join("")}</tbody></table></div>`;
+        $("#listFooter").textContent = `${items.length} ${items.length === 1 ? "competição apresentada" : "competições apresentadas"}`;
+      }
+
+      function renderDashboard() {
+        $("#dashboardTotal").textContent = state.competitions.length;
+        $("#dashboardActive").textContent = state.competitions.filter((item) => item.active).length;
+        $("#dashboardSeasons").textContent = new Set(state.competitions.map((item) => item.season)).size;
+        const recent = state.competitions.slice(0, 5);
+        const region = $("#dashboardList");
+        if (!recent.length) {
+          region.innerHTML = `<div class="empty"><div class="empty-icon">▦</div><h3>Comece pela primeira competição</h3><p>Registe uma competição para começar a organizar as épocas e modalidades da associação.</p><a class="button button-primary" href="/competitions">Abrir competições</a></div>`;
+          return;
+        }
+        region.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Competição</th><th>Época</th><th>Modalidade</th><th>Estado</th></tr></thead><tbody>${recent.map((item) => `<tr><td><span class="competition-name">${escapeHtml(item.name)}</span></td><td><span class="season">${escapeHtml(item.season)}</span></td><td><span class="sport">${sportName(item.sport)}</span></td><td><span class="badge ${item.active ? "badge-active" : "badge-inactive"}">${item.active ? "Ativa" : "Inativa"}</span></td></tr>`).join("")}</tbody></table></div>`;
+      }
+
+      function toast(message, isError = false) {
+        const element = $("#toast");
+        element.textContent = message;
+        element.classList.toggle("error", isError);
+        element.classList.add("show");
+        clearTimeout(state.toastTimer);
+        state.toastTimer = setTimeout(() => element.classList.remove("show"), 3200);
+      }
+
+      async function load() {
+        $("#tableRegion").innerHTML = '<div class="loading">A carregar competições…</div>';
+        try {
+          state.competitions = await request(API);
+          $("#dashboardPage").hidden = pageKey !== "dashboard";
+          $("#competitionsPage").hidden = pageKey !== "competitions";
+          $("#resultsPage").hidden = pageKey !== "results";
+          $("#dashboardNav").classList.toggle("active", pageKey === "dashboard");
+          $("#competitionsNav").classList.toggle("active", pageKey === "competitions");
+          $("#resultsNav").classList.toggle("active", pageKey === "results");
+          if (pageKey === "dashboard") {
+            $("#dashboardNav").setAttribute("aria-current", "page");
+            $("#competitionsNav").removeAttribute("aria-current");
+            $("#resultsNav").removeAttribute("aria-current");
+          } else if (pageKey === "competitions") {
+            $("#competitionsNav").setAttribute("aria-current", "page");
+            $("#dashboardNav").removeAttribute("aria-current");
+            $("#resultsNav").removeAttribute("aria-current");
+          } else {
+            $("#resultsNav").setAttribute("aria-current", "page");
+            $("#dashboardNav").removeAttribute("aria-current");
+            $("#competitionsNav").removeAttribute("aria-current");
+          }
+          $("#breadcrumbCurrent").textContent = pageKey === "dashboard" ? "Visão geral" : pageKey === "competitions" ? "Competições" : "Resultados";
+          render();
+        } catch (error) {
+          $("#dashboardPage").hidden = pageKey !== "dashboard";
+          $("#competitionsPage").hidden = pageKey !== "competitions";
+          $("#resultsPage").hidden = pageKey !== "results";
+          $("#dashboardList").innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+          $("#tableRegion").innerHTML = `<div class="error">${escapeHtml(error.message)}<br><br><button class="button button-quiet" data-action="retry">Tentar novamente</button></div>`;
+        }
+      }
+
+      function openModal(item = null) {
+        state.editingId = item ? item.id : null;
+        $("#modalTitle").textContent = item ? "Editar competição" : "Nova competição";
+        $("#name").value = item?.name || "";
+        $("#season").value = item?.season || "";
+        $("#sport").value = item?.sport || "football";
+        $("#active").checked = item ? Boolean(item.active) : true;
+        $("#formError").textContent = "";
+        $("#modalBackdrop").hidden = false;
+        $("#name").focus();
+      }
+      function closeModal() { $("#modalBackdrop").hidden = true; }
+
+      $("#newCompetition").addEventListener("click", () => openModal());
+      $("#closeModal").addEventListener("click", closeModal);
+      $("#cancelModal").addEventListener("click", closeModal);
+      $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === $("#modalBackdrop")) closeModal(); });
+      document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modalBackdrop").hidden) closeModal(); });
+      $("#search").addEventListener("input", render);
+      $("#seasonFilter").addEventListener("change", render);
+      $("#sportFilter").addEventListener("change", render);
+
+      $("#competitionForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const season = $("#season").value.trim();
+        const match = season.match(/^(\d{4})\/(\d{4})$/);
+        if (!match || Number(match[2]) !== Number(match[1]) + 1) {
+          $("#formError").textContent = "Indique uma época com anos consecutivos, por exemplo 2026/2027.";
+          return;
+        }
+        const payload = { name: $("#name").value.trim(), season, sport: $("#sport").value, active: $("#active").checked };
+        const save = $("#saveCompetition");
+        save.disabled = true;
+        save.textContent = "A guardar…";
+        try {
+          if (state.editingId) await request(`${API}/${encodeURIComponent(state.editingId)}`, { method: "PUT", body: JSON.stringify(payload) });
+          else await request(API, { method: "POST", body: JSON.stringify(payload) });
+          closeModal();
+          toast(state.editingId ? "Competição atualizada." : "Competição criada.");
+          await load();
+        } catch (error) { $("#formError").textContent = error.message; }
+        finally { save.disabled = false; save.textContent = "Guardar competição"; }
+      });
+
+      $("#tableRegion").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+        const { action, id } = button.dataset;
+        if (action === "new") return openModal();
+        if (action === "clear") { $("#search").value = ""; $("#seasonFilter").value = ""; $("#sportFilter").value = ""; render(); return; }
+        if (action === "retry") return load();
+        const item = state.competitions.find((competition) => String(competition.id) === id);
+        if (!item) return;
+        try {
+          if (action === "edit") return openModal(item);
+          if (action === "toggle") {
+            await request(`${API}/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ active: !item.active }) });
+            toast(item.active ? "Competição desativada." : "Competição ativada.");
+          }
+          if (action === "delete") {
+            if (!window.confirm(`Eliminar a competição “${item.name}”? Esta ação não pode ser anulada.`)) return;
+            await request(`${API}/${encodeURIComponent(id)}`, { method: "DELETE" });
+            toast("Competição eliminada.");
+          }
+          await load();
+        } catch (error) { toast(error.message, true); }
+      });
+
+      load();
+    })();
+  </script>
+  <script src="/results.js"></script>
+</body>
+</html>
