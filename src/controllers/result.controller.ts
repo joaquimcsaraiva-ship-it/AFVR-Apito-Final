@@ -48,14 +48,43 @@ export async function getByCompetition(req: Request, res: Response): Promise<voi
   res.json(await repository.listByCompetition(competitionId));
 }
 
-export async function getStandings(req: Request, res: Response): Promise<void> {
+export async function getStandings(
+  req: Request,
+  res: Response
+): Promise<void> {
+
   const competitionId = Number(req.query.competitionId);
+
   if (!Number.isInteger(competitionId) || competitionId <= 0) {
-    sendValidationError(res, "Indique uma competição válida.");
+    sendValidationError(
+      res,
+      "Indique uma competição válida."
+    );
     return;
   }
-  res.json(await repository.standingsByCompetition(competitionId));
+
+  const standings =
+    await repository.standingsByCompetition(
+      competitionId
+    );
+
+  if (standings.length === 0) {
+    res.json({
+      standings: [],
+      hasPlayedMatches: false,
+      message:
+        "Ainda não existem jogos concluídos nesta competição."
+    });
+
+    return;
+  }
+
+  res.json({
+    standings,
+    hasPlayedMatches: true
+  });
 }
+
 
 export async function getFpfCompetitions(req: Request, res: Response): Promise<void> {
   const parsed = fpfCompetitionsQuerySchema.safeParse(req.query);
