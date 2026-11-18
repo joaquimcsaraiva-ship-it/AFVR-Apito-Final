@@ -2,6 +2,7 @@ import pool from "../config/database";
 
 type Standing = {
   competitionId: number;
+groupName: string;
   teamName: string;
   played: number;
   wins: number;
@@ -22,29 +23,33 @@ export async function rebuildStandings(): Promise<void> {
     await client.query("TRUNCATE TABLE standings RESTART IDENTITY");
 
     const { rows } = await client.query(`
-      SELECT
-        competition_id,
-        home_team,
-        away_team,
-        home_score,
-        away_score
-      FROM matches
-      WHERE status = 'played'
-        AND home_score IS NOT NULL
-        AND away_score IS NOT NULL
-    `);
+  SELECT
+    competition_id,
+    group_name,
+    home_team,
+    away_team,
+    home_score,
+    away_score
+  FROM matches
+  WHERE status = 'played'
+    AND home_score IS NOT NULL
+    AND away_score IS NOT NULL
+`);
 
     const standings = new Map<string, Standing>();
 
     const getTeam = (
-      competitionId: number,
-      teamName: string
-    ): Standing => {
-      const key = `${competitionId}:${teamName}`;
+  competitionId: number,
+  groupName: string,
+  teamName: string
+): Standing => {
+      const key =
+  `${competitionId}:${groupName}:${teamName}`;
 
       if (!standings.has(key)) {
         standings.set(key, {
           competitionId,
+groupName,
           teamName,
           played: 0,
           wins: 0,
@@ -64,14 +69,16 @@ export async function rebuildStandings(): Promise<void> {
       const competitionId = Number(match.competition_id);
 
       const home = getTeam(
-        competitionId,
-        match.home_team
-      );
+  competitionId,
+  match.group_name || "",
+  match.home_team
+);
 
       const away = getTeam(
-        competitionId,
-        match.away_team
-      );
+  competitionId,
+  match.group_name || "",
+  match.away_team
+);
 
       const hs = Number(match.home_score);
       const as = Number(match.away_score);
@@ -109,7 +116,8 @@ export async function rebuildStandings(): Promise<void> {
         `
         INSERT INTO standings (
           competition_id,
-          team_name,
+group_name,
+team_name,
           played,
           wins,
           draws,
@@ -120,12 +128,13 @@ export async function rebuildStandings(): Promise<void> {
           points
         )
         VALUES (
-          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
-        )
+  $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11
+)
         `,
         [
-          team.competitionId,
-          team.teamName,
+  team.competitionId,
+  team.groupName,
+  team.teamName,
           team.played,
           team.wins,
           team.draws,
