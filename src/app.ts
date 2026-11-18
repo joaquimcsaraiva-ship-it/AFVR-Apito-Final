@@ -5,6 +5,7 @@ import pool from "./config/database";
 import authRoutes from "./routes/auth.routes";
 import competitionRoutes from "./routes/competition.routes";
 import resultRoutes from "./routes/result.routes";
+import standingsRoutes from "./routes/standings.routes";
 
 const app = express();
 
@@ -35,5 +36,5 @@ app.get(["/dashboard", "/competitions", "/results"], (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/competitions", competitionRoutes);
 app.use("/api/results", resultRoutes);
-
+app.use("/api/standings", standingsRoutes);
 export default app;

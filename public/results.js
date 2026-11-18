@@ -242,7 +242,13 @@ function renderStandings(rows) {
       $("#standingsFooter").textContent = "Apenas competições em formato de campeonato apresentam classificação.";
       return;
     }
-    const groups = new Map();
+    
+rows = rows.map((row, index) => ({
+  ...row,
+  position: index + 1,
+  team: row.teamName
+}));
+const groups = new Map();
     for (const row of rows) {
       const name = row.groupName || "";
       if (!groups.has(name)) groups.set(name, []);
@@ -260,7 +266,13 @@ function renderStandings(rows) {
 
   async function loadConflicts() {
 
-  $("#conflictsList").innerHTML =
+  const region = $("#conflictsList");
+
+  if (!region) {
+    return;
+  }
+
+  region.innerHTML =
     '<div class="loading">A carregar conflitos...</div>';
 
   try {
@@ -271,10 +283,11 @@ function renderStandings(rows) {
 
   } catch (error) {
 
-    $("#conflictsList").innerHTML =
+    region.innerHTML =
       `<div class="error">${escapeHtml(error.message)}</div>`;
   }
 }
+
 
   async function loadMatches() {
 
@@ -297,10 +310,10 @@ function renderStandings(rows) {
   try {
 
     const [matches, standings] =
-      await Promise.all([
-        api(`/api/results?competitionId=${encodeURIComponent(competitionId)}`),
-        api(`/api/results/standings?competitionId=${encodeURIComponent(competitionId)}`)
-      ]);
+  await Promise.all([
+    api(`/api/results?competitionId=${encodeURIComponent(competitionId)}`),
+    api(`/api/standings/${encodeURIComponent(competitionId)}`)
+  ]);
 
     state.matches = matches;
 
