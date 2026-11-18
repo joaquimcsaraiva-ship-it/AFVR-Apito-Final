@@ -65,10 +65,6 @@ groupName,
       return standings.get(key)!;
     };
 
-if (!match.group_name?.trim()) {
-  continue;
-}
-    
 for (const match of rows) {
       const competitionId = Number(match.competition_id);
 
