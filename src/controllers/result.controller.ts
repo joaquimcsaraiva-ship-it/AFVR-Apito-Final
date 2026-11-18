@@ -1,3 +1,5 @@
+import { rebuildStandings }
+  from "../services/standings.service";
 import type { Request, Response } from "express";
 import {
   fetchAfvrResults
@@ -146,6 +148,7 @@ export async function syncFpf(
         matches
       );
 
+await rebuildStandings();
     res.json({
       ...saved,
       competitionName: competition.name,
@@ -265,7 +268,10 @@ export async function startFpfBulkSync(req: Request, res: Response): Promise<voi
             fpfBulkSync.completed++;
           }
         }
-        fpfBulkSync.state = "completed";
+        
+await rebuildStandings();
+
+fpfBulkSync.state = "completed";
       } catch (error) {
         fpfBulkSync.state = "failed";
         fpfBulkSync.errors.push(error instanceof Error ? error.message : "Não foi possível sincronizar o catálogo FPF.");
