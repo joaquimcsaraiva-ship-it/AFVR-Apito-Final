@@ -3,6 +3,7 @@ import pool from "../config/database";
 export interface Standing {
   id: number;
   competitionId: number;
+  groupName: string | null;
   teamName: string;
   played: number;
   wins: number;
@@ -17,6 +18,7 @@ export interface Standing {
 interface StandingRow {
   id: number;
   competition_id: number;
+  group_name: string | null;
   team_name: string;
   played: number;
   wins: number;
@@ -32,6 +34,7 @@ function mapRow(row: StandingRow): Standing {
   return {
     id: row.id,
     competitionId: row.competition_id,
+    groupName: row.group_name,
     teamName: row.team_name,
     played: row.played,
     wins: row.wins,
