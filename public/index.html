@@ -297,7 +297,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark"><img src="/images/logo-afvr-apito-final.png" alt="AFVR Apito Final" class="brand-logo" /></div>
-        <div class="brand-copy"><div class="brand-name">AFVR APITO FINAL</div></div>
+        <div class="brand-copy"><<div class="brand-name">AFVR APITO FINAL</div></div>
       </div>
       <div class="nav-label">Gest√£o desportiva</div>
       <a class="nav-item" id="dashboardNav" href="/" aria-current="page"><span class="nav-icon">‚åÇ</span><span class="nav-text">Vis√£o geral</span></a>
@@ -605,207 +605,118 @@
 
       function renderDashboard() {
 
-  $("#dashboardTotal").textContent =
-    state.competitions.length;
+        $("#dashboardTotal").textContent =
+          state.competitions.length;
 
-  $("#dashboardActive").textContent =
-    state.competitions.filter(item => item.active).length;
+        $("#dashboardActive").textContent =
+          state.competitions.filter(item => item.active).length;
 
-  $("#dashboardSeasons").textContent =
-    new Set(
-      state.competitions.map(item => item.season)
-    ).size;
+        $("#dashboardSeasons").textContent =
+          new Set(
+            state.competitions.map(item => item.season)
+          ).size;
 
-  $("#dashboardMatches").textContent =
-    state.dashboard?.totalMatches ?? "‚Äî";
+        $("#dashboardMatches").textContent =
+          state.dashboard?.totalMatches ?? "ó";
 
-  $("#dashboardSync").textContent =
-    "Ativa";
+        $("#dashboardSync").textContent =
+          "Ativa";
 
-  const recent =
-    state.competitions.slice(0, 5);
+        const recent =
+          state.competitions.slice(0, 5);
 
-  const region =
-    $("#dashboardList");
+        const region =
+          $("#dashboardList");
 
-  if (!recent.length) {
-    region.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">üèÜ</div>
-        <h3>Comece pela primeira competi√ß√£o</h3>
-        <p>
-          Registe uma competi√ß√£o para come√ßar a organizar
-          as √©pocas e modalidades da associa√ß√£o.
-        </p>
-        <a class="button button-primary" href="/competitions">
-          Abrir competi√ß√µes
-        </a>
-      </div>
-    `;
-    return;
-  }
-
-  region.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Competi√ß√£o</th>
-            <th>√âpoca</th>
-            <th>Modalidade</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${recent.map(item => `
-            <tr>
-              <td>
-                <span class="competition-name">
-                  ${escapeHtml(item.name)}
-                </span>
-              </td>
-              <td>
-                <span class="season">
-                  ${escapeHtml(item.season)}
-                </span>
-              </td>
-              <td>
-                <span class="sport">
-                  ${sportName(item.sport)}
-                </span>
-              </td>
-              <td>
-                <span class="badge ${item.active ? "badge-active" : "badge-inactive"}">
-                  ${item.active ? "Ativa" : "Inativa"}
-                </span>
-              </td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  const nextRegion =
-    $("#dashboardNextMatches");
-
-  if (
-    nextRegion &&
-    state.dashboard?.nextMatches?.length
-  ) {
-    nextRegion.innerHTML =
-      state.dashboard.nextMatches
-        .map(match => `
-          <div class="fixture-card">
-
-  <div class="fixture-league">
-    Pr√≥ximo Jogo
-  </div>
-
-  <div class="fixture-teams">
-
-    <div class="fixture-home">
-      ${escapeHtml(
-        match.home_team?.trim() ||
-        "Equipa por definir"
-      )}
-    </div>
-
-    <div class="fixture-vs">
-      VS
-    </div>
-
-    <div class="fixture-away">
-      ${escapeHtml(
-        match.away_team?.trim() ||
-        "Equipa por definir"
-      )}
-    </div>
-
-  </div>
-
-  <div class="fixture-date">
-    ${new Date(match.played_at)
-      .toLocaleDateString("pt-PT")}
-    ‚Ä¢
-    ${new Date(match.played_at)
-      .toLocaleTimeString(
-        "pt-PT",
-        {
-          hour: "2-digit",
-          minute: "2-digit"
+        if (!recent.length) {
+          region.innerHTML = `
+            <div class="empty">
+              <div class="empty-icon">??</div>
+              <h3>Comece pela primeira competiÁ„o</h3>
+              <p>
+                Registe uma competiÁ„o para comeÁar a organizar
+                as Èpocas e modalidades da associaÁ„o.
+              </p>
+            </div>
+          `;
+          return;
         }
-      )}
-  </div>
 
-</div>
-  <div class="fixture-teams">
-    <div class="fixture-home">
-      ${escapeHtml(
-  match.home_team?.trim() ||
-  "Equipa por definir"
-)}
-    </div>
-
-    <div class="fixture-vs">
-      VS
-    </div>
-
-    <div class="fixture-away">
-      ${escapeHtml(
-  match.away_team?.trim() ||
-  "Equipa por definir"
-)}
-    </div>
-  </div>
-
-  <div class="fixture-date">
-    ${new Date(match.played_at).toLocaleDateString("pt-PT")}
-  </div>
-</div>
-            <strong>${escapeHtml(
-  match.home_team?.trim() ||
-  "Equipa por definir"
-)}</strong>
-            <span>vs</span>
-            <strong>${escapeHtml(
-  match.away_team?.trim() ||
-  "Equipa por definir"
-)}</strong>
+        region.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>CompetiÁ„o</th>
+                  <th>…poca</th>
+                  <th>Modalidade</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${recent.map(item => `
+                  <tr>
+                    <td>${escapeHtml(item.name)}</td>
+                    <td>${escapeHtml(item.season)}</td>
+                    <td>${sportName(item.sport)}</td>
+                    <td>${item.active ? "Ativa" : "Inativa"}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
           </div>
-        `)
-        .join("");
-  }
+        `;
 
-  const lastRegion =
-    $("#dashboardLastResults");
+        const nextRegion =
+          $("#dashboardNextMatches");
 
-  if (
-    lastRegion &&
-    state.dashboard?.lastResults?.length
-  ) {
-    lastRegion.innerHTML =
-      state.dashboard.lastResults
-        .map(match => `
-          <div class="card-row">
-            <strong>${escapeHtml(
-  match.home_team?.trim() ||
-  "Equipa por definir"
-)}</strong>
-            ${match.home_score}
-            -
-            ${match.away_score}
-            <strong>${escapeHtml(
-  match.away_team?.trim() ||
-  "Equipa por definir"
-)}</strong>
-          </div>
-        `)
-        .join("");
-  }
+        if (nextRegion) {
+          nextRegion.innerHTML =
+            state.dashboard?.nextMatches?.length
+              ? state.dashboard.nextMatches.map(match => `
+                  <div class="fixture-card">
+                    <div class="fixture-league">
+                      PrÛximo Jogo
+                    </div>
 
-}
+                    <div class="fixture-teams">
+                      <div class="fixture-home">
+                        ${escapeHtml(match.home_team || "Equipa por definir")}
+                      </div>
 
+                      <div class="fixture-vs">
+                        VS
+                      </div>
+
+                      <div class="fixture-away">
+                        ${escapeHtml(match.away_team || "Equipa por definir")}
+                      </div>
+                    </div>
+
+                    <div class="fixture-date">
+                      ${new Date(match.played_at).toLocaleDateString("pt-PT")}
+                    </div>
+                  </div>
+                `).join("")
+              : '<div class="empty">Sem jogos agendados.</div>';
+        }
+
+        const lastRegion =
+          $("#dashboardLastResults");
+
+        if (lastRegion) {
+          lastRegion.innerHTML =
+            state.dashboard?.lastResults?.length
+              ? state.dashboard.lastResults.map(match => `
+                  <div class="card-row">
+                    <strong>${escapeHtml(match.home_team)}</strong>
+                    ${match.home_score} - ${match.away_score}
+                    <strong>${escapeHtml(match.away_team)}</strong>
+                  </div>
+                `).join("")
+              : '<div class="empty">Sem resultados.</div>';
+        }
+      }
       function toast(message, isError = false) {
         const element = $("#toast");
         element.textContent = message;
@@ -929,3 +840,135 @@ state.dashboard =
   <script src="/results.js"></script>
 </body>
 </html>
+
+
+<style>
+.brand-logo{
+  width:72px;
+  height:auto;
+  display:block;
+}
+.fixture-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 6px 16px rgba(15,23,42,.08);
+  transition:.2s;
+}
+
+.fixture-card:hover{
+  transform:translateY(-2px);
+}
+
+.fixture-league{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.fixture-teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.fixture-home,
+.fixture-away{
+  flex:1;
+  font-size:18px;
+  font-weight:700;
+}
+
+.fixture-away{
+  text-align:right;
+}
+
+.fixture-vs{
+  background:#d4a017;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.fixture-date{
+  text-align:center;
+  color:#64748b;
+  margin-top:10px;
+}
+.fixture-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  border:1px solid #e2e8f0;
+  box-shadow:0 6px 16px rgba(15,23,42,.08);
+  transition:.2s;
+}
+
+.fixture-card:hover{
+  transform:translateY(-2px);
+}
+
+.fixture-league{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.fixture-teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.fixture-home,
+.fixture-away{
+  flex:1;
+  font-size:18px;
+  font-weight:700;
+}
+
+.fixture-away{
+  text-align:right;
+}
+
+.fixture-vs{
+  background:#d4a017;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.fixture-date{
+  text-align:center;
+  color:#64748b;
+  margin-top:10px;
+}
+</style>
+
+
+
+
+
+
+<style>
+.brand-logo{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  display:block;
+}
+</style>
+
+
