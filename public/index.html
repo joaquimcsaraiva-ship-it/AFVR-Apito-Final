@@ -223,7 +223,27 @@
     z-index: 1000;
   }
 }
-    @media (max-width: 680px) {
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 24, 51, 0.65);
+    z-index: 999;
+  }
+
+  .mobile-overlay.show {
+    display: block;
+  }
+
+  .sidebar.mobile-open {
+    z-index: 1000;
+  }
+}    
+@media (max-width: 680px) {
       .layout { display: block; }
       .sidebar { display: none; }
       .topbar { height: 58px; padding: 0 18px; }
@@ -253,6 +273,7 @@
   </style>
 </head>
 <body>
+<div id="mobileOverlay" class="mobile-overlay" hidden></div>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
@@ -621,14 +642,21 @@
       });
 
             const mobileMenuButton = document.getElementById("mobileMenuButton");
-      const sidebar = document.querySelector(".sidebar");
+const sidebar = document.querySelector(".sidebar");
+const mobileOverlay = document.getElementById("mobileOverlay");
 
       if (mobileMenuButton && sidebar) {
         mobileMenuButton.hidden = false;
 
         mobileMenuButton.addEventListener("click", () => {
-          sidebar.classList.toggle("mobile-open");
-        });
+  sidebar.classList.toggle("mobile-open");
+  mobileOverlay?.classList.toggle("show");
+});
+
+mobileOverlay?.addEventListener("click", () => {
+  sidebar.classList.remove("mobile-open");
+  mobileOverlay.classList.remove("show");
+});
       }
 
       load();
