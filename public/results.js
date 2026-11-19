@@ -287,7 +287,25 @@ const groups = new Map();
       `<div class="error">${escapeHtml(error.message)}</div>`;
   }
 }
+function updateTeamsDatalist(matches) {
+  const teams = new Set();
 
+  matches.forEach(match => {
+    teams.add(match.homeTeam);
+    teams.add(match.awayTeam);
+  });
+
+  const datalist = $("#teamsList");
+
+  if (!datalist) {
+    return;
+  }
+
+  datalist.innerHTML = [...teams]
+    .sort((a, b) => a.localeCompare(b, "pt-PT"))
+    .map(team => `<option value="${escapeHtml(team)}">`)
+    .join("");
+}
 
   async function loadMatches() {
 
@@ -316,6 +334,7 @@ const groups = new Map();
   ]);
 
     state.matches = matches;
+updateTeamsDatalist(matches);
 
     renderMatches();
     renderStandings(standings);
