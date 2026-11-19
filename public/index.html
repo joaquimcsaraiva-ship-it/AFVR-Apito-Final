@@ -254,6 +254,39 @@
   grid-template-columns: 1fr;
   gap: 10px;
 }
+.stats {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+th {
+  padding: 10px 8px;
+  font-size: 9px;
+}
+
+td {
+  padding: 10px 8px;
+  font-size: 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  min-width: 750px;
+}
+
+.result-score {
+  font-size: 13px;
+}
+
+.source-tag {
+  font-size: 10px;
+  padding: 4px 8px;
+}
+
       .stat { padding: 13px 12px; align-items: flex-start; }
       .stat-icon { display: none; }
       .stat-label { font-size: 10px; }
@@ -262,8 +295,24 @@
       .filters { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
       .search { grid-column: 1 / -1; }
       .search input, .filters select { width: 100%; }
-      th, td { padding: 12px 13px; }
+      th {
+  padding: 10px 8px;
+  font-size: 9px;
+}
+
+td {
+  padding: 10px 8px;
+  font-size: 12px;
+}
       th:nth-child(3), td:nth-child(3) { display: none; }
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  min-width: 750px;
+}
       .user span { display: none; }
       .form-grid { grid-template-columns: 1fr; gap: 0; }
       .sync-fields { align-items: stretch; flex-direction: column; }
