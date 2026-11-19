@@ -230,7 +230,10 @@
       .content { padding: 27px 16px 40px; }
       .heading { align-items: flex-start; flex-direction: column; }
       .heading .button { width: 100%; }
-      .stats { gap: 8px; }
+      .stats {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
       .stat { padding: 13px 12px; align-items: flex-start; }
       .stat-icon { display: none; }
       .stat-label { font-size: 10px; }
