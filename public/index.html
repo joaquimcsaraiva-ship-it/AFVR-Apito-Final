@@ -199,6 +199,30 @@
       .search input { width: 190px; }
       .manual-grid { grid-template-columns: 1fr; }
     }
+.mobile-menu-button {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: #041833;
+  color: #f4c542;
+  font-size: 22px;
+}
+
+@media (max-width: 680px) {
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .sidebar.mobile-open {
+    display: flex !important;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 260px;
+    z-index: 1000;
+  }
+}
     @media (max-width: 680px) {
       .layout { display: block; }
       .sidebar { display: none; }
@@ -246,6 +270,10 @@
     </aside>
     <main>
       <header class="topbar">
+<button id="mobileMenuButton" class="mobile-menu-button" hidden>
+  ☰
+</button>
+
         <div class="breadcrumb">Gestão desportiva <span aria-hidden="true">/</span> <strong id="breadcrumbCurrent">Visão geral</strong></div>
         <div class="user"><div class="avatar">A</div><span id="authUserText">Consulta pública</span><button class="button button-quiet" id="loginButton" type="button">Entrar na gestão</button><button class="button button-quiet" id="logoutButton" type="button" hidden>Sair</button></div>
       </header>
@@ -588,6 +616,19 @@
           await load();
         } catch (error) { toast(error.message, true); }
       });
+
+      load();
+    })();
+      const mobileMenuButton = document.getElementById("mobileMenuButton");
+      const sidebar = document.querySelector(".sidebar");
+
+      if (mobileMenuButton && sidebar) {
+        mobileMenuButton.hidden = false;
+
+        mobileMenuButton.addEventListener("click", () => {
+          sidebar.classList.toggle("mobile-open");
+        });
+      }
 
       load();
     })();
