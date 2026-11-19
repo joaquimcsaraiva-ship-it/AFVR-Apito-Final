@@ -77,7 +77,8 @@ match.homeScore == null
 
 <td>
 <span class="source-tag">
-${match.source === "fpf" ? "FPF" : "Manual"}
+${match.source === "fpf" ? "● FPF" : "○ Manual"}
+
 </span>
 </td>
 </tr>
