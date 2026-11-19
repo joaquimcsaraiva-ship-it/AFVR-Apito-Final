@@ -462,6 +462,21 @@ $("#refreshConflicts")
 
   $("#manualMatchForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+const homeTeam = $("#homeTeam").value.trim();
+const awayTeam = $("#awayTeam").value.trim();
+
+if (
+  homeTeam &&
+  awayTeam &&
+  homeTeam.toLowerCase() === awayTeam.toLowerCase()
+) {
+  showMessage(
+    "#manualMessage",
+    "A equipa da casa e visitante não podem ser iguais.",
+    true
+  );
+  return;
+}
     const competitionId = Number($("#resultCompetition").value);
     if (!competitionId) { showMessage("#manualMessage", "Selecione primeiro uma competição.", true); return; }
     const homeScoreValue = $("#homeScore").value.trim();
