@@ -257,8 +257,23 @@
               <h3>Registar jogo</h3>
               <div class="form-row"><label for="resultCompetition">Competição</label><select class="field" id="resultCompetition" required><option value="">Selecione uma competição</option></select></div>
               <div class="form-grid">
-                <div class="form-row"><label for="homeTeam">Equipa da casa</label><input class="field" id="homeTeam" required maxlength="180"></div>
-                <div class="form-row"><label for="awayTeam">Equipa visitante</label><input class="field" id="awayTeam" required maxlength="180"></div>
+                <div class="form-row"><label for="homeTeam">Equipa da casa</label><input
+  class="field"
+  id="homeTeam"
+  list="teamsList"
+  required
+  maxlength="180"></div>
+                <div class="form-row">
+  <label for="awayTeam">Equipa visitante</label>
+  <input
+    class="field"
+    id="awayTeam"
+    list="teamsList"
+    required
+    maxlength="180">
+</div>
+
+<datalist id="teamsList"></datalist>
                 <div class="form-row"><label for="matchDate">Data e hora</label><input class="field" id="matchDate" type="datetime-local"></div>
                 <div class="form-row"><label for="matchVenue">Campo</label><input class="field" id="matchVenue" maxlength="250"></div>
                 <div class="form-row"><label for="homeScore">Golos casa</label><input class="field" id="homeScore" type="number" min="0" inputmode="numeric"></div>
