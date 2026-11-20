@@ -355,9 +355,19 @@ export async function getDashboard(
   const matches =
     await repository.getDashboardSummary();
 
-  const nextMatches =
+  const now = new Date();
+
+const nextMatches =
   matches
-    .filter(m => m.status === "scheduled")
+    .filter(
+      match =>
+        match.status === "scheduled" &&
+        new Date(match.played_at) >= now &&
+        match.home_team &&
+        match.home_team !== "(Não iniciado)" &&
+        match.away_team &&
+        match.away_team !== "(Não iniciado)"
+    )
     .sort(
       (a, b) =>
         new Date(a.played_at).getTime() -
