@@ -704,6 +704,15 @@ const mobileOverlay = document.getElementById("mobileOverlay");
   sidebar.classList.toggle("mobile-open");
   mobileOverlay?.classList.toggle("show");
 });
+document
+  .querySelectorAll(".nav-item")
+  .forEach((item) => {
+    item.addEventListener("click", () => {
+      sidebar?.classList.remove("mobile-open");
+      mobileOverlay?.classList.remove("show");
+    });
+  });
+
 
 mobileOverlay?.addEventListener("click", () => {
   sidebar.classList.remove("mobile-open");
