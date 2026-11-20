@@ -364,6 +364,10 @@ export async function getDashboard(
         new Date(b.played_at).getTime()
     )
     .slice(0, 5);
+const scheduledMatches =
+  matches.filter(
+    match => match.status === "scheduled"
+  ).length;
 const lastResults =
   matches
     .filter(
@@ -398,6 +402,7 @@ res.json({
   fpfMatches,
   manualMatches,
   conflicts,
+  scheduledMatches,
   nextMatches,
   lastResults
 });

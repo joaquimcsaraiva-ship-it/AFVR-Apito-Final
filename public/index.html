@@ -396,7 +396,21 @@ table {
     </div>
     <div class="stat-icon">⚠️</div>
   </article>
+<article class="stat">
+  <div>
+    <div class="stat-label">Jogos Agendados</div>
+    <div class="stat-value" id="dashboardScheduled">—</div>
+  </div>
+  <div class="stat-icon">📅</div>
+</article>
+</section><section class="panel">
+  <div class="panel-head">
+    <h2 class="panel-title">Próximos Jogos</h2>
+  </div>
 
+  <div id="dashboardNextMatches">
+    <div class="loading">A carregar jogos...</div>
+  </div>
 </section>
         <section class="panel">
           <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
@@ -621,13 +635,52 @@ request("/api/results/dashboard")
 
     $("#dashboardConflicts").textContent =
       summary.conflicts ?? 0;
+const nextMatchesHtml =
+  (summary.nextMatches || [])
+    .slice(0, 5)
+    .map(match => `
+      <tr>
+        <td>${escapeHtml(match.home_team)}</td>
+        <td>${escapeHtml(match.away_team)}</td>
+        <td>${new Date(
+          match.played_at
+        ).toLocaleDateString("pt-PT")}</td>
+      </tr>
+    `)
+    .join("");
+$("#dashboardNextMatches").innerHTML =
+  nextMatchesHtml
+    ? `
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Casa</th>
+              <th>Visitante</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${nextMatchesHtml}
+          </tbody>
+        </table>
+      </div>
+    `
+    : `
+      <div class="empty">
+        Sem jogos agendados.
+      </div>
+    `;
   })
   .catch(() => {
-    $("#dashboardMatches").textContent = "—";
-    $("#dashboardFpf").textContent = "—";
-    $("#dashboardManual").textContent = "—";
-    $("#dashboardConflicts").textContent = "—";
-  });
+  $("#dashboardMatches").textContent = "—";
+  $("#dashboardFpf").textContent = "—";
+  $("#dashboardManual").textContent = "—";
+  $("#dashboardConflicts").textContent = "—";
+
+  $("#dashboardNextMatches").innerHTML =
+    '<div class="error">Não foi possível carregar os próximos jogos.</div>';
+});
         const recent = state.competitions.slice(0, 5);
         const region = $("#dashboardList");
         if (!recent.length) {
