@@ -378,9 +378,27 @@ const lastResults =
         new Date(a.played_at).getTime()
     )
     .slice(0, 5);
-  res.json({
-    totalMatches: matches.length,
-    nextMatches,
-    lastResults
-  });
+  const fpfMatches =
+  matches.filter(
+    match => match.source === "fpf"
+  ).length;
+
+const manualMatches =
+  matches.filter(
+    match => match.source === "manual"
+  ).length;
+
+const conflicts =
+  matches.filter(
+    match => match.conflict_detected
+  ).length;
+
+res.json({
+  totalMatches: matches.length,
+  fpfMatches,
+  manualMatches,
+  conflicts,
+  nextMatches,
+  lastResults
+});
 }

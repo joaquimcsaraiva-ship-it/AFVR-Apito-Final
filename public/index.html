@@ -363,6 +363,41 @@ table {
           <article class="stat"><div><div class="stat-label">Competições ativas</div><div class="stat-value" id="dashboardActive">—</div></div><div class="stat-icon">✓</div></article>
           <article class="stat"><div><div class="stat-label">Épocas disponíveis</div><div class="stat-value" id="dashboardSeasons">—</div></div><div class="stat-icon">◷</div></article>
         </section>
+<section class="stats" aria-label="Resumo dos jogos">
+
+  <article class="stat">
+    <div>
+      <div class="stat-label">Jogos Totais</div>
+      <div class="stat-value" id="dashboardMatches">—</div>
+    </div>
+    <div class="stat-icon">⚽</div>
+  </article>
+
+  <article class="stat">
+    <div>
+      <div class="stat-label">Jogos FPF</div>
+      <div class="stat-value" id="dashboardFpf">—</div>
+    </div>
+    <div class="stat-icon">✅</div>
+  </article>
+
+  <article class="stat">
+    <div>
+      <div class="stat-label">Jogos Manuais</div>
+      <div class="stat-value" id="dashboardManual">—</div>
+    </div>
+    <div class="stat-icon">✏️</div>
+  </article>
+
+  <article class="stat">
+    <div>
+      <div class="stat-label">Conflitos</div>
+      <div class="stat-value" id="dashboardConflicts">—</div>
+    </div>
+    <div class="stat-icon">⚠️</div>
+  </article>
+
+</section>
         <section class="panel">
           <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
           <div id="dashboardList"><div class="loading">A carregar resumo…</div></div>
@@ -573,6 +608,26 @@ table {
         $("#dashboardTotal").textContent = state.competitions.length;
         $("#dashboardActive").textContent = state.competitions.filter((item) => item.active).length;
         $("#dashboardSeasons").textContent = new Set(state.competitions.map((item) => item.season)).size;
+request("/api/results/dashboard")
+  .then((summary) => {
+    $("#dashboardMatches").textContent =
+      summary.totalMatches ?? 0;
+
+    $("#dashboardFpf").textContent =
+      summary.fpfMatches ?? 0;
+
+    $("#dashboardManual").textContent =
+      summary.manualMatches ?? 0;
+
+    $("#dashboardConflicts").textContent =
+      summary.conflicts ?? 0;
+  })
+  .catch(() => {
+    $("#dashboardMatches").textContent = "—";
+    $("#dashboardFpf").textContent = "—";
+    $("#dashboardManual").textContent = "—";
+    $("#dashboardConflicts").textContent = "—";
+  });
         const recent = state.competitions.slice(0, 5);
         const region = $("#dashboardList");
         if (!recent.length) {

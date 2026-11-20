@@ -88,11 +88,12 @@ export async function listConflicts() {
   competition_id,
   home_team,
   away_team,
-  official_source,
-  verification_status,
-  conflict_detected,
-  conflict_reasons,
-  played_at
+  played_at,
+  home_score,
+  away_score,
+  status,
+  source,
+  conflict_detected
 FROM matches
       WHERE conflict_detected = TRUE
       ORDER BY played_at DESC NULLS LAST
@@ -583,7 +584,9 @@ export async function getDashboardSummary() {
       played_at,
       home_score,
       away_score,
-      status
+      status,
+      source,
+      conflict_detected
     FROM matches
     ORDER BY played_at DESC NULLS LAST
     LIMIT 5000
@@ -591,3 +594,4 @@ export async function getDashboardSummary() {
 
   return result.rows;
 }
+
