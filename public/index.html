@@ -828,9 +828,25 @@ table {
       }
 
       function renderDashboard() {
-        $("#dashboardTotal").textContent = state.competitions.length;
-        $("#dashboardActive").textContent = state.competitions.filter((item) => item.active).length;
-        $("#dashboardSeasons").textContent = new Set(state.competitions.map((item) => item.season)).size;
+        const dashboardTotal = $("#dashboardTotal");
+const dashboardActive = $("#dashboardActive");
+const dashboardSeasons = $("#dashboardSeasons");
+
+if (dashboardTotal) {
+  dashboardTotal.textContent = state.competitions.length;
+}
+
+if (dashboardActive) {
+  dashboardActive.textContent =
+    state.competitions.filter((item) => item.active).length;
+}
+
+if (dashboardSeasons) {
+  dashboardSeasons.textContent =
+    new Set(
+      state.competitions.map((item) => item.season)
+    ).size;
+}
 request("/api/results/dashboard")
   .then((summary) => {
     $("#dashboardMatches").textContent =
