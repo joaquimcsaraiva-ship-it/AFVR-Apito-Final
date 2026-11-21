@@ -187,13 +187,15 @@ await rebuildStandings();
     });
 
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Não foi possível sincronizar os resultados da FPF.";
+  console.error("FPF_SYNC_ERROR", error);
 
-    res.status(502).json({ message });
-  }
+  const message =
+    error instanceof Error
+      ? error.stack ?? error.message
+      : "Não foi possível sincronizar os resultados da FPF.";
+
+  res.status(502).json({ message });
+}
 }
 
 export async function syncAfvr(
