@@ -24,6 +24,11 @@ export interface MatchResult {
   status: "scheduled" | "played" | "postponed" | "cancelled";
   source: "manual" | "fpf";
   updatedAt: Date;
+
+  officialSource?: string | null;
+  verificationStatus?: string | null;
+  conflictDetected?: boolean;
+  conflictReasons?: string[] | null;
 }
 
 export interface TeamStanding {
@@ -42,19 +47,31 @@ export interface TeamStanding {
 
 function mapMatch(row: Record<string, unknown>): MatchResult {
   return {
-    id: Number(row.id),
-    competitionId: Number(row.competition_id),
-    homeTeam: String(row.home_team),
-    awayTeam: String(row.away_team),
-    groupName: row.group_name == null ? null : String(row.group_name),
-    playedAt: row.played_at ? new Date(String(row.played_at)) : null,
-    venue: row.venue == null ? null : String(row.venue),
-    homeScore: row.home_score == null ? null : Number(row.home_score),
-    awayScore: row.away_score == null ? null : Number(row.away_score),
-    status: row.status as MatchResult["status"],
-    source: row.source as MatchResult["source"],
-    updatedAt: new Date(String(row.updated_at))
-  };
+  id: Number(row.id),
+  competitionId: Number(row.competition_id),
+  homeTeam: String(row.home_team),
+  awayTeam: String(row.away_team),
+  groupName: row.group_name == null ? null : String(row.group_name),
+  playedAt: row.played_at ? new Date(String(row.played_at)) : null,
+  venue: row.venue == null ? null : String(row.venue),
+  homeScore: row.home_score == null ? null : Number(row.home_score),
+  awayScore: row.away_score == null ? null : Number(row.away_score),
+  status: row.status as MatchResult["status"],
+  source: row.source as MatchResult["source"],
+  updatedAt: new Date(String(row.updated_at)),
+  officialSource:
+    row.official_source == null
+      ? null
+      : String(row.official_source),
+  verificationStatus:
+    row.verification_status == null
+      ? null
+      : String(row.verification_status),
+  conflictDetected: Boolean(row.conflict_detected),
+  conflictReasons: Array.isArray(row.conflict_reasons)
+    ? (row.conflict_reasons as string[])
+    : null
+};
 }
 
 function normalizeCompetitionName(value: string): string {
@@ -68,8 +85,22 @@ function normalizeTeamName(value: string): string {
 }
 
 const matchColumns = `
-  id, competition_id, home_team, away_team, group_name, played_at, venue,
-  home_score, away_score, status, source, updated_at
+  id,
+  competition_id,
+  home_team,
+  away_team,
+  group_name,
+  played_at,
+  venue,
+  home_score,
+  away_score,
+  status,
+  source,
+  updated_at,
+  official_source,
+  verification_status,
+  conflict_detected,
+  conflict_reasons
 `;
 
 export async function listByCompetition(competitionId: number): Promise<MatchResult[]> {
@@ -652,17 +683,20 @@ export async function syncFpfResults(
 export async function getDashboardSummary() {
   const result = await pool.query(`
     SELECT
-      id,
-      competition_id,
-      home_team,
-      away_team,
-      played_at,
-      home_score,
-      away_score,
-      status,
-      source,
-      conflict_detected
-    FROM matches
+  id,
+  competition_id,
+  home_team,
+  away_team,
+  played_at,
+  home_score,
+  away_score,
+  status,
+  source,
+  conflict_detected,
+  official_source,
+  verification_status,
+  conflict_reasons
+FROM matches
 WHERE
   home_team IS NOT NULL
   AND away_team IS NOT NULL
