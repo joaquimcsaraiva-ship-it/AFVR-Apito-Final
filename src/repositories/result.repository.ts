@@ -392,7 +392,14 @@ sourcePriority: number
       );
 
       if (manualIndex >= 0) {
-        const [manualMatch] = manualCandidates.rows.splice(manualIndex, 1);
+console.log(
+  "SYNC_MATCH",
+  externalId,
+  match.homeTeam,
+  "vs",
+  match.awayTeam
+);        
+const [manualMatch] = manualCandidates.rows.splice(manualIndex, 1);
         const occupiedId = await client.query(
           "SELECT id FROM matches WHERE external_id = $1 AND id <> $2",
           [externalId, manualMatch!.id]
