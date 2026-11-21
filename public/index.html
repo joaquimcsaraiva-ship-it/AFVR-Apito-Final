@@ -95,7 +95,84 @@
     .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-size: 19px; }
     .stat:nth-child(2) .stat-icon { background: var(--green-soft); color: var(--green); }
     .stat:nth-child(3) .stat-icon { background: var(--amber-soft); color: var(--amber); }
-    .panel { background: white; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.hero-results {
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b
+  );
+
+  color: white;
+  padding: 32px;
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  padding: 8px 16px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+.hero-results h1 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.1;
+}
+
+.hero-results p {
+  margin-top: 14px;
+  max-width: 620px;
+  opacity: .85;
+}
+
+.hero-right {
+  min-width: 340px;
+}
+
+.hero-right input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-size: 15px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}    
+.hero-highlights {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-highlights span {
+  background: rgba(255,255,255,.15);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.panel { background: white; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .panel-head { padding: 19px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .panel-title { margin: 0; font: 700 16px Manrope, sans-serif; }
     .panel-help { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
@@ -258,7 +335,23 @@
   }
 }    
 @media (max-width: 680px) {
-      .layout { display: block; }
+.hero-content {
+  flex-direction: column;
+}
+
+.hero-right {
+  width: 100%;
+  min-width: auto;
+}
+
+.hero-results {
+  padding: 22px;
+}
+
+.hero-results h1 {
+  font-size: 28px;
+}      
+.layout { display: block; }
       .sidebar { display: none; }
       .topbar { height: 58px; padding: 0 18px; }
       .content { padding: 27px 16px 40px; }
@@ -364,14 +457,66 @@ table {
   ☰
 </button>
 
-        <div class="breadcrumb">Gestão desportiva <span aria-hidden="true">/</span> <strong id="breadcrumbCurrent">Visão geral</strong></div>
-        <div class="user"><div class="avatar">A</div><span id="authUserText">Consulta pública</span><button class="button button-quiet" id="loginButton" type="button">Entrar na gestão</button><button class="button button-quiet" id="logoutButton" type="button" hidden>Sair</button></div>
+        <div class="breadcrumb">
+  ⚽ AFVR APITO FINAL
+  <span aria-hidden="true">/</span>
+  <strong id="breadcrumbCurrent">
+    Resultados Distritais
+  </strong>
+</div>
+        <div class="user"><div class="avatar">A</div><span id="authUserText">
+  Resultados em Tempo Real
+</span><button class="button button-quiet" id="loginButton" type="button">Entrar na gestão</button><button class="button button-quiet" id="logoutButton" type="button" hidden>Sair</button></div>
       </header>
       <section class="content" id="dashboardPage" hidden>
-        <div class="heading">
-          <div><div class="eyebrow">AFVR Apito Final</div><h1>Visão geral</h1><p class="subtitle">Acompanhe a atividade desportiva numa só vista.</p></div>
-          <a class="button button-primary" href="/competitions"><span aria-hidden="true">▦</span> Gerir competições</a>
-        </div>
+        <section class="hero-results">
+  <div class="hero-content">
+
+    <div class="hero-left">
+
+      <div class="hero-badge">
+        ⚽ AFVR APITO FINAL
+      </div>
+
+      <h1>
+        Resultados distritais
+        em tempo real
+      </h1>
+
+      <p>
+        Consulte resultados, classificações,
+        calendários e próximos jogos das
+        competições AFVR.
+      </p>
+<div class="hero-highlights">
+  <span>⚽ 2142 Jogos</span>
+  <span>🏆 32 Competições</span>
+  <span>✅ Dados Oficiais FPF</span>
+</div>
+    </div>
+
+    <div class="hero-right">
+
+      <input
+        id="globalSearch"
+        type="text"
+        placeholder="🔍 Procurar equipa, competição ou jogador"
+      />
+
+      <div class="hero-actions">
+        <a class="button button-primary" href="/results">
+          Ver Resultados
+        </a>
+
+        <a class="button button-quiet" href="/competitions">
+          Competições
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
         <section class="stats" aria-label="Resumo da plataforma">
           <article class="stat"><div><div class="stat-label">Competições registadas</div><div class="stat-value" id="dashboardTotal">—</div></div><div class="stat-icon">▦</div></article>
           <article class="stat"><div><div class="stat-label">Competições ativas</div><div class="stat-value" id="dashboardActive">—</div></div><div class="stat-icon">✓</div></article>
