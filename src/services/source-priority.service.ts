@@ -1,13 +1,14 @@
 export const SOURCE_PRIORITY = {
-  afvr: 100,
-  fpf: 90,
+  fpf: 100,
 
-  club_site: 50,
+  afvr: 80,
 
-  facebook: 40,
-  instagram: 35,
+  manual: 60,
 
-  zerozero: 30,
+  zerozero: 40,
 
-  manual: 20
+  club_site: 30,
+
+  facebook: 20,
+  instagram: 20
 } as const;
