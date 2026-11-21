@@ -471,15 +471,38 @@ if (scheduledFpfMatch.rowCount) {
 }      
 const placeholder = placeholderCandidates.rows.shift();
       if (placeholder) {
-        await client.query(
-          `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
-             group_name = $4, played_at = $5, venue = $6, home_score = $7, away_score = $8,
-             status = $9, updated_at = NOW() WHERE id = $10`,
-          [externalId, match.homeTeam, match.awayTeam, match.groupName, match.playedAt, match.venue,
-            match.homeScore, match.awayScore, match.status, placeholder.id]
-        );
-        continue;
-      }
+  try {
+    await client.query(
+      `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
+         group_name = $4, played_at = $5, venue = $6,
+         home_score = $7, away_score = $8,
+         status = $9, updated_at = NOW()
+       WHERE id = $10`,
+      [
+        externalId,
+        match.homeTeam,
+        match.awayTeam,
+        match.groupName,
+        match.playedAt,
+        match.venue,
+        match.homeScore,
+        match.awayScore,
+        match.status,
+        placeholder.id
+      ]
+    );
+  } catch (error) {
+    console.error(
+      "CONFLICT",
+      externalId,
+      match.homeTeam,
+      match.awayTeam
+    );
+    throw error;
+  }
+
+  continue;
+}
 
       const savedResult = await client.query(
         `INSERT INTO matches (
