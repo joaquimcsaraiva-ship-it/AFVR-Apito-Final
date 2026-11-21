@@ -225,7 +225,46 @@
   background: rgba(255, 193, 7, 0.12);
   border-left: 4px solid #d97706;
 }
+.results-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
+.result-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  border-left: 4px solid #22c55e;
+}
+
+.result-card.conflict {
+  border-left-color: #f59e0b;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-score {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.result-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-status {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #64748b;
+}
 .match-conflict td {
   font-weight: 600;
 }
@@ -821,16 +860,26 @@ const lastResultsHtml =
   (summary.lastResults || [])
     .slice(0, 5)
     .map(match => `
-      <tr class="${match.conflict_detected ? "match-conflict" : ""}">
-        <td>${escapeHtml(match.home_team)}</td>
-        <td>
-          ${match.home_score} - ${match.away_score}
-          ${match.conflict_detected
-            ? '<span class="conflict-badge">⚠️</span>'
-            : ''}
-        </td>
-        <td>${escapeHtml(match.away_team)}</td>
-      </tr>
+      <div class="result-card ${match.conflict_detected ? "conflict" : ""}">
+
+        <div class="result-header">
+
+          <div class="result-teams">
+            <div>${escapeHtml(match.home_team)}</div>
+            <div>${escapeHtml(match.away_team)}</div>
+          </div>
+
+          <div class="result-score">
+            ${match.home_score} - ${match.away_score}
+          </div>
+
+        </div>
+
+        <div class="result-status">
+          ${match.conflict_detected ? "⚠️ Conflito" : "✅ Oficial"}
+        </div>
+
+      </div>
     `)
     .join("");
 $("#dashboardNextMatches").innerHTML =
@@ -859,18 +908,10 @@ $("#dashboardNextMatches").innerHTML =
 $("#dashboardLastResults").innerHTML =
   lastResultsHtml
     ? `
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Casa</th>
-              <th>Resultado</th>
-              <th>Visitante</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${lastResultsHtml}
-          </tbody>
+      <div class="results-cards">
+        ${lastResultsHtml}
+      </div>
+    `
         </table>
       </div>
     `
