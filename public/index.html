@@ -144,6 +144,15 @@
     .field:focus { border-color: #4a94c9; box-shadow: 0 0 0 3px #1769aa1c; }
     .filters select { width: 142px; }
     .table-wrap { overflow-x: auto; }
+.match-conflict {
+  background: rgba(255, 193, 7, 0.12);
+}
+
+.conflict-badge {
+  color: #d97706;
+  font-weight: 700;
+  margin-left: 6px;
+}
     .standings-group + .standings-group { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
     .standings-group-title { margin: 0 0 10px; color: var(--ink); font: 700 14px Manrope, sans-serif; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -412,7 +421,17 @@ table {
     <div class="loading">A carregar jogos...</div>
   </div>
 </section>
+<section class="panel">
+  <div class="panel-head">
+    <h2 class="panel-title">Últimos Resultados</h2>
+  </div>
+
+  <div id="dashboardLastResults">
+    <div class="loading">A carregar resultados...</div>
+  </div>
+</section>
         <section class="panel">
+
           <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
           <div id="dashboardList"><div class="loading">A carregar resumo…</div></div>
           <div class="footer">Os dados são atualizados a partir da base de dados do AFVR Apito Final.
@@ -648,6 +667,22 @@ const nextMatchesHtml =
       </tr>
     `)
     .join("");
+const lastResultsHtml =
+  (summary.lastResults || [])
+    .slice(0, 5)
+    .map(match => `
+      <tr class="${match.conflict_detected ? "match-conflict" : ""}">
+        <td>${escapeHtml(match.home_team)}</td>
+        <td>
+          ${match.home_score} - ${match.away_score}
+          ${match.conflict_detected
+            ? '<span class="conflict-badge">⚠️</span>'
+            : ''}
+        </td>
+        <td>${escapeHtml(match.away_team)}</td>
+      </tr>
+    `)
+    .join("");
 $("#dashboardNextMatches").innerHTML =
   nextMatchesHtml
     ? `
@@ -671,25 +706,42 @@ $("#dashboardNextMatches").innerHTML =
         Sem jogos agendados.
       </div>
     `;
+$("#dashboardLastResults").innerHTML =
+  lastResultsHtml
+    ? `
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Casa</th>
+              <th>Resultado</th>
+              <th>Visitante</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lastResultsHtml}
+          </tbody>
+        </table>
+      </div>
+    `
+    : `
+      <div class="empty">
+        Sem resultados disponíveis.
+      </div>
+    `;
   })
   .catch(() => {
-  $("#dashboardMatches").textContent =
-  summary.totalMatches ?? 0;
-
-$("#dashboardFpf").textContent =
-  summary.fpfMatches ?? 0;
-
-$("#dashboardManual").textContent =
-  summary.manualMatches ?? 0;
-
-$("#dashboardConflicts").textContent =
-  summary.conflicts ?? 0;
-
-$("#dashboardScheduled").textContent =
-  summary.scheduledMatches ?? 0;
+  $("#dashboardMatches").textContent = "0";
+  $("#dashboardFpf").textContent = "0";
+  $("#dashboardManual").textContent = "0";
+  $("#dashboardConflicts").textContent = "0";
+  $("#dashboardScheduled").textContent = "0";
 
   $("#dashboardNextMatches").innerHTML =
     '<div class="error">Não foi possível carregar os próximos jogos.</div>';
+
+  $("#dashboardLastResults").innerHTML =
+    '<div class="error">Não foi possível carregar os resultados.</div>';
 });
         const recent = state.competitions.slice(0, 5);
         const region = $("#dashboardList");
