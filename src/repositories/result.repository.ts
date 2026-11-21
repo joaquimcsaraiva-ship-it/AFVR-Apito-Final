@@ -668,8 +668,10 @@ WHERE
   AND away_team IS NOT NULL
   AND TRIM(home_team) <> ''
   AND TRIM(away_team) <> ''
-  AND TRIM(home_team) <> '(Não iniciado)'
-  AND TRIM(away_team) <> '(Não iniciado)'
+  AND LOWER(TRIM(home_team)) NOT LIKE '%não iniciado%'
+  AND LOWER(TRIM(away_team)) NOT LIKE '%não iniciado%'
+  AND LOWER(TRIM(home_team)) NOT LIKE '%nao iniciado%'
+  AND LOWER(TRIM(away_team)) NOT LIKE '%nao iniciado%'
 ORDER BY played_at DESC NULLS LAST
 LIMIT 5000
   `);
