@@ -187,7 +187,10 @@ await rebuildStandings();
     });
 
   } catch (error) {
-  console.error("FPF_SYNC_ERROR", error);
+  console.error(
+  "FPF_SYNC_ERROR",
+  error instanceof Error ? error.stack : error
+);
 
   const message =
     error instanceof Error
