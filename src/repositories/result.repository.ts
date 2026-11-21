@@ -663,8 +663,15 @@ export async function getDashboardSummary() {
       source,
       conflict_detected
     FROM matches
-    ORDER BY played_at DESC NULLS LAST
-    LIMIT 5000
+WHERE
+  home_team IS NOT NULL
+  AND away_team IS NOT NULL
+  AND TRIM(home_team) <> ''
+  AND TRIM(away_team) <> ''
+  AND TRIM(home_team) <> '(Não iniciado)'
+  AND TRIM(away_team) <> '(Não iniciado)'
+ORDER BY played_at DESC NULLS LAST
+LIMIT 5000
   `);
 
   return result.rows;
