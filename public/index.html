@@ -95,6 +95,59 @@
     .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-size: 19px; }
     .stat:nth-child(2) .stat-icon { background: var(--green-soft); color: var(--green); }
     .stat:nth-child(3) .stat-icon { background: var(--amber-soft); color: var(--amber); }
+.homepage-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.homepage-main,
+.homepage-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.featured-panel {
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b
+  );
+  color: white;
+}
+
+.featured-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.featured-league {
+  opacity: .75;
+  font-size: 12px;
+}
+
+.featured-team {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.featured-vs {
+  opacity: .7;
+}
+
+.featured-date {
+  margin-top: 20px;
+  color: #fbbf24;
+}
+
+@media (max-width: 1100px) {
+  .homepage-layout {
+    grid-template-columns: 1fr;
+  }
+}
 .hero-results {
   background: linear-gradient(
     135deg,
@@ -556,7 +609,10 @@ table {
 
   </div>
 </section>
-        <!--<section class="stats" aria-label="Resumo da plataforma">
+<div class="homepage-layout">
+
+  <div class="homepage-main">        
+<!--<section class="stats" aria-label="Resumo da plataforma">
           <article class="stat"><div><div class="stat-label">Competições registadas</div><div class="stat-value" id="dashboardTotal">—</div></div><div class="stat-icon">▦</div></article>
           <article class="stat"><div><div class="stat-label">Competições ativas</div><div class="stat-value" id="dashboardActive">—</div></div><div class="stat-icon">✓</div></article>
           <article class="stat"><div><div class="stat-label">Épocas disponíveis</div><div class="stat-value" id="dashboardSeasons">—</div></div><div class="stat-icon">◷</div></article>
@@ -610,6 +666,9 @@ table {
     <div class="loading">A carregar resultados...</div>
   </div>
 </section>
+  </div>
+
+  <aside class="homepage-side">
 </section><section class="panel">
   <div class="panel-head">
     <h2 class="panel-title">Próximos Jogos</h2>
@@ -619,8 +678,43 @@ table {
     <div class="loading">A carregar jogos...</div>
   </div>
 </section>
+<section class="panel featured-panel">
 
-        <section class="panel">
+  <div class="panel-head">
+    <h2 class="panel-title">
+      🔥 Jogo da Semana
+    </h2>
+  </div>
+
+  <div class="featured-content">
+
+    <div class="featured-league">
+      Campeonato Distrital Divisão Honra
+    </div>
+
+    <div class="featured-team">
+      CDC Montalegre
+    </div>
+
+    <div class="featured-vs">
+      VS
+    </div>
+
+    <div class="featured-team">
+      GD Chaves
+    </div>
+
+    <div class="featured-date">
+      Domingo • 15:00
+    </div>
+
+  </div>
+
+</section>
+  </aside>
+
+</div>       
+ <section class="panel">
 
           <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
           <div id="dashboardList"><div class="loading">A carregar resumo…</div></div>
