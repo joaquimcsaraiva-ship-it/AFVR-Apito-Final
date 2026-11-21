@@ -673,10 +673,20 @@ $("#dashboardNextMatches").innerHTML =
     `;
   })
   .catch(() => {
-  $("#dashboardMatches").textContent = "—";
-  $("#dashboardFpf").textContent = "—";
-  $("#dashboardManual").textContent = "—";
-  $("#dashboardConflicts").textContent = "—";
+  $("#dashboardMatches").textContent =
+  summary.totalMatches ?? 0;
+
+$("#dashboardFpf").textContent =
+  summary.fpfMatches ?? 0;
+
+$("#dashboardManual").textContent =
+  summary.manualMatches ?? 0;
+
+$("#dashboardConflicts").textContent =
+  summary.conflicts ?? 0;
+
+$("#dashboardScheduled").textContent =
+  summary.scheduledMatches ?? 0;
 
   $("#dashboardNextMatches").innerHTML =
     '<div class="error">Não foi possível carregar os próximos jogos.</div>';
