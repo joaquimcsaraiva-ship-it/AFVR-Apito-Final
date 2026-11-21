@@ -285,18 +285,27 @@ if (resolution) {
       UPDATE matches
 SET
   official_source = $2,
-  verification_status = $3,
-  conflict_detected = $4,
-  conflict_reasons = $5
-      WHERE id = $1
+  home_score = $3,
+  away_score = $4,
+  source = $5,
+  verification_status = $6,
+  conflict_detected = $7,
+  conflict_reasons = $8
+WHERE id = $1
     `,
     [
   savedMatch.id,
   resolution.officialSource,
+  resolution.homeScore,
+  resolution.awayScore,
+  resolution.officialSource,
+
   resolution.conflictDetected
     ? "conflict"
     : "official",
+
   resolution.conflictDetected,
+
   JSON.stringify(resolution.reasons)
 ]
   );
@@ -576,20 +585,29 @@ if (resolution) {
   await client.query(
     `
       UPDATE matches
-      SET
-        official_source = $2,
-        verification_status = $3,
-        conflict_detected = $4
-      WHERE id = $1
+SET
+  official_source = $2,
+  home_score = $3,
+  away_score = $4,
+  source = $5,
+  verification_status = $6,
+  conflict_detected = $7
+WHERE id = $1
     `,
     [
-      matchId,
-      resolution.officialSource,
-      resolution.conflictDetected
-        ? "conflict"
-        : "official",
-      resolution.conflictDetected
-    ]
+  matchId,
+
+  resolution.officialSource,
+  resolution.homeScore,
+  resolution.awayScore,
+  resolution.officialSource,
+
+  resolution.conflictDetected
+    ? "conflict"
+    : "official",
+
+  resolution.conflictDetected
+]
   );
 }
     }
