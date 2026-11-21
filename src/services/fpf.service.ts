@@ -369,9 +369,22 @@ export async function fetchFpfMatchesForCompetition(
   });
   const byFpfId = new Map<number, FpfMatch>();
   for (const fixture of fixtures) {
-    const match = parseFixture(fixture, competition.season, fixture.groupName);
-    if (match) byFpfId.set(match.fpfMatchId, match);
+  const match = parseFixture(
+    fixture,
+    competition.season,
+    fixture.groupName
+  );
+
+  if (!match) {
+    console.log(
+      "FPF fixture not parsed:",
+      fixture.text
+    );
+    continue;
   }
+
+  byFpfId.set(match.fpfMatchId, match);
+}
   const staticMatches = fixtureSources.flatMap((source) => parseStaticFixtures(source.markup, competition, source.groupName));
   const normalizeTeam = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
   for (const match of staticMatches) {
