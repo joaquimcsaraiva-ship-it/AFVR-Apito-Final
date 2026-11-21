@@ -440,31 +440,31 @@ const scheduledFpfMatch = await client.query<{
     match.playedAt
   ]
 );
-const existingExternalId = await client.query(
-  `
-  SELECT id
-  FROM matches
-  WHERE external_id = $1
-    AND id <> $2
-  `,
-  [
-    externalId,
-    scheduledFpfMatch.rows[0].id
-  ]
-);
+if (scheduledFpfMatch.rowCount && scheduledFpfMatch.rows[0]) {
 
-if (
-  existingExternalId.rowCount !== null &&
-  existingExternalId.rowCount > 0
-) {
-  console.warn(
-    "SKIPPED_DUPLICATE_EXTERNAL_ID",
-    externalId,
-    match.homeTeam,
-    match.awayTeam
+  const existingExternalId = await client.query(
+    `
+    SELECT id
+    FROM matches
+    WHERE external_id = $1
+      AND id <> $2
+    `,
+    [
+      externalId,
+      scheduledFpfMatch.rows[0].id
+    ]
   );
 
-  continue;
+  if ((existingExternalId.rowCount ?? 0) > 0) {
+    console.warn(
+      "SKIPPED_DUPLICATE_EXTERNAL_ID",
+      externalId,
+      match.homeTeam,
+      match.awayTeam
+    );
+
+    continue;
+  }
 }
 
 if (scheduledFpfMatch.rowCount) {
