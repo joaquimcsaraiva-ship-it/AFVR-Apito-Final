@@ -361,18 +361,36 @@ export async function getDashboard(
     await repository.getDashboardSummary();
 
   const now = new Date();
+const playedKeys = new Set(
+  matches
+    .filter(
+      m =>
+        m.status === "played" &&
+        m.home_score !== null &&
+        m.away_score !== null
+    )
+    .map(
+      m =>
+        `${m.competition_id}|${m.home_team}|${m.away_team}|${new Date(m.played_at).toISOString().slice(0, 10)}`
+    )
+);
 
 const nextMatches =
   matches
-    .filter(
-      match =>
+    .filter(match => {
+      const key =
+        `${match.competition_id}|${match.home_team}|${match.away_team}|${new Date(match.played_at).toISOString().slice(0, 10)}`;
+
+      return (
         match.status === "scheduled" &&
+        !playedKeys.has(key) &&
         new Date(match.played_at) >= now &&
         match.home_team &&
         match.home_team !== "(Não iniciado)" &&
         match.away_team &&
         match.away_team !== "(Não iniciado)"
-    )
+      );
+    })
     .sort(
       (a, b) =>
         new Date(a.played_at).getTime() -
