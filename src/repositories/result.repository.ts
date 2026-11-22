@@ -596,17 +596,18 @@ if (scheduledFpfMatch.rowCount && scheduledFpfMatch.rows[0]) {
     continue;
   }
 }
-console.error(
-  "SCHEDULED_FPF_MATCH",
-  {
-    externalId,
-    matchId: scheduledFpfMatch.rows[0]?.id,
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    playedAt: match.playedAt
-  }
-);
-if (scheduledFpfMatch.rowCount) {
+if (existingFpfMatch.rowCount) {
+
+  console.error(
+    "EXISTING_FPF_MATCH",
+    {
+      externalId,
+      matchId: existingFpfMatch.rows[0].id,
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      playedAt: match.playedAt
+    }
+  );
   await client.query(
     `
       UPDATE matches
