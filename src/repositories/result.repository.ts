@@ -358,16 +358,16 @@ return saved;
 
   throw error;
 } finally {
-    client.release();
-  }
+  client.release();
+}
 }
 
 async function syncExternalResults(
   associationId: number,
   competition: FpfCompetition,
   matches: FpfMatch[],
-source: ResultSource,
-sourcePriority: number
+  source: ResultSource,
+  sourcePriority: number
 ): Promise<{ localCompetitionId: number; saved: number }> {
   const client = await pool.connect();
   try {
@@ -779,12 +779,19 @@ WHERE id = $1
     await client.query("COMMIT");
     return { localCompetitionId, saved: matches.length };
   } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
+  await client.query("ROLLBACK");
+
+  console.error(
+    "SYNC_EXTERNAL_RESULTS_ERROR",
+    error
+  );
+
+  throw error;
+} finally {
+  client.release();
 }
+}
+
 export async function syncAfvrResults(
   associationId: number,
   competition: FpfCompetition,
