@@ -471,7 +471,7 @@ const existingFpfMatch = await client.query<{
       AND source = 'fpf'
       AND LOWER(home_team) = LOWER($2)
       AND LOWER(away_team) = LOWER($3)
-      AND DATE(played_at) = DATE($4)
+      AND played_at = $4
     LIMIT 1
     FOR UPDATE
   `,
@@ -559,7 +559,7 @@ const scheduledFpfMatch = await client.query<{
       AND away_score IS NULL
       AND LOWER(home_team) = LOWER($2)
       AND LOWER(away_team) = LOWER($3)
-      AND DATE(played_at) = DATE($4)
+      AND played_at = $4
     LIMIT 1
     FOR UPDATE
   `,
