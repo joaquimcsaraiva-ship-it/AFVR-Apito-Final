@@ -611,7 +611,26 @@ if (scheduledFpfMatch.rowCount) {
   continue;
 }      
 const placeholder = placeholderCandidates.rows.shift();
-      if (placeholder) {
+const duplicatePlaceholder = await client.query(
+  `
+    SELECT id
+    FROM matches
+    WHERE external_id = $1
+  `,
+  [externalId]
+);
+
+if ((duplicatePlaceholder.rowCount ?? 0) > 0) {
+  console.warn(
+    "SKIPPED_DUPLICATE_EXTERNAL_ID_PLACEHOLDER",
+    externalId,
+    match.homeTeam,
+    match.awayTeam
+  );
+
+  continue;
+}      
+if (placeholder) {
   try {
     await client.query(
       `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
@@ -634,11 +653,15 @@ const placeholder = placeholderCandidates.rows.shift();
     );
   } catch (error) {
     console.error(
-      "CONFLICT",
-      externalId,
-      match.homeTeam,
-      match.awayTeam
-    );
+  "CONFLICT",
+  {
+    externalId,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    playedAt: match.playedAt,
+    placeholderId: placeholder.id
+  }
+);
     throw error;
   }
 
