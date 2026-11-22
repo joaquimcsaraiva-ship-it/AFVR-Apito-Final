@@ -461,34 +461,25 @@ const [manualMatch] = manualCandidates.rows.splice(manualIndex, 1);
           continue;
         }
       }
-const existingFpfMatch = await client.query<{
+const existingByExternalId = await client.query<{
   id: number;
 }>(
   `
     SELECT id
     FROM matches
-    WHERE competition_id = $1
-      AND source = 'fpf'
-      AND LOWER(home_team) = LOWER($2)
-      AND LOWER(away_team) = LOWER($3)
-      AND played_at = $4
+    WHERE external_id = $1
     LIMIT 1
     FOR UPDATE
   `,
-  [
-    localCompetitionId,
-    match.homeTeam,
-    match.awayTeam,
-    match.playedAt
-  ]
+  [externalId]
 );
-if (existingFpfMatch.rowCount) {
+if (existingByExternalId.rowCount) {
 
   console.error(
     "EXISTING_FPF_MATCH",
     {
       externalId,
-      matchId: existingFpfMatch.rows[0].id,
+      matchId: existingByExternalId.rows[0].id,
       homeTeam: match.homeTeam,
       awayTeam: match.awayTeam,
       playedAt: match.playedAt
@@ -504,7 +495,7 @@ if (existingFpfMatch.rowCount) {
     `,
     [
       externalId,
-      existingFpfMatch.rows[0].id
+      existingByExternalId.rows[0].id
     ]
   );
 
@@ -541,7 +532,7 @@ if (existingFpfMatch.rowCount) {
       match.homeScore,
       match.awayScore,
       match.status,
-      existingFpfMatch.rows[0].id
+      existingByExternalId.rows[0].id
     ]
   );
 
@@ -597,13 +588,13 @@ if (scheduledFpfMatch.rowCount && scheduledFpfMatch.rows[0]) {
     continue;
   }
 }
-if (existingFpfMatch.rowCount) {
+if (scheduledFpfMatch.rowCount) {
 
   console.error(
     "EXISTING_FPF_MATCH",
     {
       externalId,
-      matchId: existingFpfMatch.rows[0].id,
+      matchId: existingByExternalId.rows[0].id,
       homeTeam: match.homeTeam,
       awayTeam: match.awayTeam,
       playedAt: match.playedAt
@@ -820,35 +811,6 @@ export async function removePlaceholderMatches(): Promise<void> {
       OR LOWER(away_team) LIKE '%iniciado%'
   `);
 }
-
-export async function removeDuplicateMatches(): Promise<void> {
-  await pool.query(`
-    DELETE FROM matches
-    WHERE id IN (
-      SELECT id
-      FROM (
-        SELECT
-          id,
-          ROW_NUMBER() OVER (
-            PARTITION BY
-              competition_id,
-              LOWER(home_team),
-              LOWER(away_team),
-              DATE(played_at)
-            ORDER BY
-              CASE
-                WHEN status = 'played' THEN 0
-                ELSE 1
-              END,
-              played_at DESC,
-              id DESC
-          ) AS rn
-        FROM matches
-      ) ranked
-      WHERE rn > 1
-    )
-  `);
-}
 export async function syncAfvrResults(
   associationId: number,
   competition: FpfCompetition,
@@ -910,8 +872,8 @@ WHERE
   AND away_team IS NOT NULL
   AND TRIM(home_team) <> ''
   AND TRIM(away_team) <> ''
-  AND LOWER(TRIM(home_team)) NOT LIKE '%não iniciado%'
-  AND LOWER(TRIM(away_team)) NOT LIKE '%não iniciado%'
+  AND LOWER(TRIM(home_team)) NOT LIKE '%iniciado%'
+  AND LOWER(TRIM(away_team)) NOT LIKE '%iniciado%'
   AND LOWER(TRIM(home_team)) NOT LIKE '%nao iniciado%'
   AND LOWER(TRIM(away_team)) NOT LIKE '%nao iniciado%'
 ORDER BY played_at DESC NULLS LAST
