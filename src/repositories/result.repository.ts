@@ -349,14 +349,15 @@ await client.query("COMMIT");
 return saved;
 
   } catch (error) {
-    await client.query("ROLLBACK");
-console.error("SYNC_EXTERNAL_RESULTS_ERROR", {
-  competition: competition.name,
-  competitionId: competition.fpfCompetitionId,
-  error
-});    
-throw error;
-  } finally {
+  await client.query("ROLLBACK");
+
+  console.error(
+    "SYNC_EXTERNAL_RESULTS_ERROR",
+    error
+  );
+
+  throw error;
+} finally {
     client.release();
   }
 }
