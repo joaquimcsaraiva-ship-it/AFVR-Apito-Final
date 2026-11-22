@@ -482,6 +482,16 @@ const existingFpfMatch = await client.query<{
     match.playedAt
   ]
 );
+console.error(
+  "EXISTING_FPF_MATCH",
+  {
+    externalId,
+    matchId: existingFpfMatch.rows[0].id,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    playedAt: match.playedAt
+  }
+);
 if (existingFpfMatch.rowCount) {
 
   const duplicateExternalId = await client.query(
@@ -586,7 +596,16 @@ if (scheduledFpfMatch.rowCount && scheduledFpfMatch.rows[0]) {
     continue;
   }
 }
-
+console.error(
+  "SCHEDULED_FPF_MATCH",
+  {
+    externalId,
+    matchId: scheduledFpfMatch.rows[0]?.id,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    playedAt: match.playedAt
+  }
+);
 if (scheduledFpfMatch.rowCount) {
   await client.query(
     `
