@@ -629,14 +629,45 @@ if ((duplicatePlaceholder.rowCount ?? 0) > 0) {
   );
 
   continue;
-}      
+} 
 if (placeholder) {
+
+  const existingExternalId = await client.query(
+    `
+      SELECT id
+      FROM matches
+      WHERE external_id = $1
+        AND id <> $2
+    `,
+    [
+      externalId,
+      placeholder.id
+    ]
+  );
+
+  if ((existingExternalId.rowCount ?? 0) > 0) {
+    console.warn(
+      "SKIPPED_DUPLICATE_EXTERNAL_ID_PLACEHOLDER",
+      externalId,
+      match.homeTeam,
+      match.awayTeam
+    );
+
+    continue;
+  }
+
   try {
     await client.query(
-      `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
-         group_name = $4, played_at = $5, venue = $6,
-         home_score = $7, away_score = $8,
-         status = $9, updated_at = NOW()
+      `UPDATE matches SET external_id = $1,
+         home_team = $2,
+         away_team = $3,
+         group_name = $4,
+         played_at = $5,
+         venue = $6,
+         home_score = $7,
+         away_score = $8,
+         status = $9,
+         updated_at = NOW()
        WHERE id = $10`,
       [
         externalId,
@@ -653,15 +684,15 @@ if (placeholder) {
     );
   } catch (error) {
     console.error(
-  "CONFLICT",
-  {
-    externalId,
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    playedAt: match.playedAt,
-    placeholderId: placeholder.id
-  }
-);
+      "CONFLICT",
+      {
+        externalId,
+        homeTeam: match.homeTeam,
+        awayTeam: match.awayTeam,
+        playedAt: match.playedAt,
+        placeholderId: placeholder.id
+      }
+    );
     throw error;
   }
 
