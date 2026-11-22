@@ -816,10 +816,8 @@ export async function removePlaceholderMatches(): Promise<void> {
   await pool.query(`
     DELETE FROM matches
     WHERE
-      LOWER(home_team) LIKE '%não iniciado%'
-      OR LOWER(away_team) LIKE '%não iniciado%'
-      OR LOWER(home_team) LIKE '%nao iniciado%'
-      OR LOWER(away_team) LIKE '%nao iniciado%'
+      LOWER(home_team) LIKE '%iniciado%'
+      OR LOWER(away_team) LIKE '%iniciado%'
   `);
 }
 
@@ -866,7 +864,7 @@ export async function syncAfvrResults(
   );
 
   await removePlaceholderMatches();
-  await removeDuplicateMatches();
+// await removeDuplicateMatches();
 
   return result;
 }
@@ -886,7 +884,7 @@ export async function syncFpfResults(
   );
 
   await removePlaceholderMatches();
-  await removeDuplicateMatches();
+// await removeDuplicateMatches();
 
   return result;
 }
