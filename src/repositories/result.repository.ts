@@ -482,17 +482,18 @@ const existingFpfMatch = await client.query<{
     match.playedAt
   ]
 );
-console.error(
-  "EXISTING_FPF_MATCH",
-  {
-    externalId,
-    matchId: existingFpfMatch.rows[0].id,
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    playedAt: match.playedAt
-  }
-);
 if (existingFpfMatch.rowCount) {
+
+  console.error(
+    "EXISTING_FPF_MATCH",
+    {
+      externalId,
+      matchId: existingFpfMatch.rows[0].id,
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      playedAt: match.playedAt
+    }
+  );
 
   const duplicateExternalId = await client.query(
     `
