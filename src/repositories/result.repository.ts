@@ -350,7 +350,12 @@ return saved;
 
   } catch (error) {
     await client.query("ROLLBACK");
-    throw error;
+console.error("SYNC_EXTERNAL_RESULTS_ERROR", {
+  competition: competition.name,
+  competitionId: competition.fpfCompetitionId,
+  error
+});    
+throw error;
   } finally {
     client.release();
   }
