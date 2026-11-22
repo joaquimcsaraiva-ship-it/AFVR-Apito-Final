@@ -812,20 +812,63 @@ WHERE id = $1
   client.release();
 }
 }
+export async function removePlaceholderMatches(): Promise<void> {
+  await pool.query(`
+    DELETE FROM matches
+    WHERE
+      LOWER(home_team) LIKE '%não iniciado%'
+      OR LOWER(away_team) LIKE '%não iniciado%'
+      OR LOWER(home_team) LIKE '%nao iniciado%'
+      OR LOWER(away_team) LIKE '%nao iniciado%'
+  `);
+}
 
+export async function removeDuplicateMatches(): Promise<void> {
+  await pool.query(`
+    DELETE FROM matches
+    WHERE id IN (
+      SELECT id
+      FROM (
+        SELECT
+          id,
+          ROW_NUMBER() OVER (
+            PARTITION BY
+              competition_id,
+              LOWER(home_team),
+              LOWER(away_team),
+              DATE(played_at)
+            ORDER BY
+              CASE
+                WHEN status = 'played' THEN 0
+                ELSE 1
+              END,
+              played_at DESC,
+              id DESC
+          ) AS rn
+        FROM matches
+      ) ranked
+      WHERE rn > 1
+    )
+  `);
+}
 export async function syncAfvrResults(
   associationId: number,
   competition: FpfCompetition,
   matches: FpfMatch[]
 ): Promise<{ localCompetitionId: number; saved: number }> {
 
-  return syncExternalResults(
+  const result = await syncExternalResults(
     associationId,
     competition,
     matches,
     ResultSource.AFVR,
     SOURCE_PRIORITY.afvr
   );
+
+  await removePlaceholderMatches();
+  await removeDuplicateMatches();
+
+  return result;
 }
 
 export async function syncFpfResults(
@@ -834,13 +877,18 @@ export async function syncFpfResults(
   matches: FpfMatch[]
 ): Promise<{ localCompetitionId: number; saved: number }> {
 
-  return syncExternalResults(
+  const result = await syncExternalResults(
     associationId,
     competition,
     matches,
     ResultSource.FPF,
     SOURCE_PRIORITY.fpf
   );
+
+  await removePlaceholderMatches();
+  await removeDuplicateMatches();
+
+  return result;
 }
 export async function getDashboardSummary() {
   const result = await pool.query(`
