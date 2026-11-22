@@ -100,6 +100,7 @@
   grid-template-columns: 2fr 1fr;
   gap: 24px;
   margin-top: 24px;
+  align-items: start;
 }
 
 .homepage-main,
@@ -109,88 +110,60 @@
   gap: 24px;
 }
 
+.homepage-side {
+  align-self: start;
+}
+
 .featured-panel {
   background: linear-gradient(
     135deg,
     #0f172a,
     #1e293b
   );
-  color: white;
+  color: #fff;
 }
 
 .featured-content {
-  padding: 20px;
-  text-align: center;
-}
-
-.featured-team {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 10px 0;
-}
-
-.featured-date {
-  margin-top: 16px;
-  color: #fbbf24;
-}
-
-@media (max-width: 1100px) {
-  .homepage-layout {
-    grid-template-columns: 1fr;
-  }
-}
-.homepage-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  margin-top: 24px;
-}
-
-.homepage-main,
-.homepage-side {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.featured-panel {
-  background: linear-gradient(
-    135deg,
-    #0f172a,
-    #1e293b
-  );
-  color: white;
-}
-
-.featured-content {
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
   text-align: center;
-  padding: 20px;
 }
 
 .featured-league {
-  opacity: .75;
-  font-size: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,.8);
 }
 
 .featured-team {
   font-size: 24px;
   font-weight: 700;
-  margin: 12px 0;
+  color: red !important;
+  margin: 0;
 }
-
+.featured-league {
+  color: yellow !important;
+}
 .featured-vs {
-  opacity: .7;
+  color: rgba(255,255,255,.7);
+  font-weight: 700;
 }
 
 .featured-date {
-  margin-top: 20px;
   color: #fbbf24;
+  font-weight: 600;
+  margin: 0;
 }
 
 @media (max-width: 1100px) {
-  .homepage-layout {
-    grid-template-columns: 1fr;
-  }
+  
+}
+
+@media (max-width: 1100px) {
+  
 }
 .hero-results {
   background: linear-gradient(
@@ -718,11 +691,9 @@ table {
 </section>
   </div>
 
-  <div class="homepage-side">
-  </div>
+ <aside class="homepage-side">
 
-  <aside class="homepage-side">
-</section><section class="panel">
+<section class="panel">
   <div class="panel-head">
     <h2 class="panel-title">Próximos Jogos</h2>
   </div>
@@ -730,35 +701,9 @@ table {
   <div id="dashboardNextMatches">
     <div class="loading">A carregar jogos...</div>
   </div>
-</section><section class="panel featured-panel">
-  <div class="panel-head">
-    <h2 class="panel-title">
-      🔥 Jogo da Semana
-    </h2>
-  </div>
-
-  <div class="featured-content">
-
-    <div class="featured-team">
-      CDC Montalegre
-    </div>
-
-    <div class="featured-vs">
-      VS
-    </div>
-
-    <div class="featured-team">
-      GD Chaves
-    </div>
-
-    <div class="featured-date">
-      Domingo · 15:00
-    </div>
-
-  </div>
 </section>
-<section class="panel featured-panel">
 
+<section class="panel featured-panel">
   <div class="panel-head">
     <h2 class="panel-title">
       🔥 Jogo da Semana
@@ -790,12 +735,11 @@ table {
   </div>
 
 </section>
-  </aside>
 
-</div>       
-  </div>
+</aside>
 
-</div> 
+</div>
+
 <section class="panel">
 
           <div class="panel-head"><h2 class="panel-title">Competições recentes</h2><a class="button button-quiet" href="/competitions">Ver todas <span aria-hidden="true">→</span></a></div>
