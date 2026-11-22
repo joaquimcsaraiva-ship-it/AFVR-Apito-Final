@@ -477,6 +477,31 @@ const existingFpfMatch = await client.query<{
   ]
 );
 if (existingFpfMatch.rowCount) {
+
+  const duplicateExternalId = await client.query(
+    `
+      SELECT id
+      FROM matches
+      WHERE external_id = $1
+        AND id <> $2
+    `,
+    [
+      externalId,
+      existingFpfMatch.rows[0].id
+    ]
+  );
+
+  if ((duplicateExternalId.rowCount ?? 0) > 0) {
+    console.warn(
+      "SKIPPED_DUPLICATE_EXTERNAL_ID",
+      externalId,
+      match.homeTeam,
+      match.awayTeam
+    );
+
+    continue;
+  }
+
   await client.query(
     `
       UPDATE matches
