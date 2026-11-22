@@ -485,7 +485,62 @@ if (existingByExternalId.rowCount) {
       playedAt: match.playedAt
     }
   );
+const scheduledMatchByTeams = await client.query<{
+  id: number;
+}>(
+  `
+    SELECT id
+    FROM matches
+    WHERE competition_id = $1
+      AND source = 'fpf'
+      AND status = 'scheduled'
+      AND home_score IS NULL
+      AND away_score IS NULL
+      AND LOWER(home_team) = LOWER($2)
+      AND LOWER(away_team) = LOWER($3)
+    ORDER BY id DESC
+    LIMIT 1
+    FOR UPDATE
+  `,
+  [
+    localCompetitionId,
+    match.homeTeam,
+    match.awayTeam
+  ]
+);
+if (
+  match.status === "played" &&
+  scheduledMatchByTeams.rowCount
+) {
 
+  await client.query(
+    `
+      UPDATE matches
+      SET
+        external_id = $1,
+        group_name = $2,
+        played_at = $3,
+        venue = $4,
+        home_score = $5,
+        away_score = $6,
+        status = $7,
+        updated_at = NOW()
+      WHERE id = $8
+    `,
+    [
+      externalId,
+      match.groupName,
+      match.playedAt,
+      match.venue,
+      match.homeScore,
+      match.awayScore,
+      match.status,
+      scheduledMatchByTeams.rows[0].id
+    ]
+  );
+
+  continue;
+}
   const duplicateExternalId = await client.query(
     `
       SELECT id
