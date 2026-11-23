@@ -513,6 +513,26 @@ if (
   scheduledMatchByTeams.rowCount
 ) {
 
+  const existingExternalId = await client.query(
+    `
+      SELECT id
+      FROM matches
+      WHERE external_id = $1
+    `,
+    [externalId]
+  );
+
+  if (existingExternalId.rowCount) {
+    console.warn(
+      "EXTERNAL_ID_ALREADY_EXISTS",
+      {
+        externalId,
+        existingId: existingExternalId.rows[0].id,
+        targetId: scheduledMatchByTeams.rows[0].id
+      }
+    );
+  }
+
   await client.query(
     `
       UPDATE matches

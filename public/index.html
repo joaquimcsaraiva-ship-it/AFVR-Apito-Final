@@ -223,32 +223,53 @@
 }
 
 .next-match-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  transition: .2s ease;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.next-match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 
 .next-home,
 .next-away {
-  font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #041833;
 }
 
 .next-vs {
-  margin: 8px 0;
-  color: var(--muted);
+  margin: 10px 0;
   font-size: 12px;
   font-weight: 700;
+  color: #94a3b8;
 }
 
 .next-date {
-  margin-top: 10px;
-  color: var(--blue);
+  margin-top: 12px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #082a68;
+}
+
+.next-league {
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.next-time {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 700;
 }
 
 .panel {
@@ -1009,26 +1030,44 @@ request("/api/results/dashboard")
 
     $("#dashboardConflicts").textContent =
       summary.conflicts ?? 0;
-const nextMatchesHtml =
-  (summary.nextMatches || [])
-    .slice(0, 5)
-    .map(match => `
-      <div class="next-match-card">
-        <div class="next-home">
-          ${escapeHtml(match.home_team)}
-        </div>
+.map(match => `
+  <div class="next-match-card">
 
-        <div class="next-vs">VS</div>
+    <div class="next-league">
+      ${escapeHtml(
+        match.competition_name ||
+        match.competition ||
+        "Competição"
+      )}
+    </div>
 
-        <div class="next-away">
-          ${escapeHtml(match.away_team)}
-        </div>
+    <div class="next-home">
+      ${escapeHtml(match.home_team)}
+    </div>
 
-        <div class="next-date">
-          ${new Date(match.played_at).toLocaleDateString("pt-PT")}
-        </div>
-      </div>
-    `)
+    <div class="next-vs">
+      VS
+    </div>
+
+    <div class="next-away">
+      ${escapeHtml(match.away_team)}
+    </div>
+
+    <div class="next-date">
+      ${new Date(match.played_at)
+        .toLocaleDateString("pt-PT")}
+    </div>
+
+    <div class="next-time">
+      ${new Date(match.played_at)
+        .toLocaleTimeString("pt-PT", {
+          hour: "2-digit",
+          minute: "2-digit"
+        })}
+    </div>
+
+  </div>
+`)
     .join("");
 $("#dashboardNextMatches").innerHTML =
   nextMatchesHtml
