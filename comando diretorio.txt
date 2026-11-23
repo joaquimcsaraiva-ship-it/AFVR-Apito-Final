@@ -1,4 +1,7 @@
 cd "C:\Users\joaqu\OneDrive\Documentos\Codex\afvr-resultados"
 
 
-RHCEwiNvCLRgSPeVEHCxbYJJSkGSl72y
+psql "postgresql://afvr_apitofinal_user:PALAVRA_PASSE@dpg-jJ84f52C0zDdtzB2qf0tI95xa94jHX96-a.oregon-postgres.render.com/afvr_resultados"
+
+& "C:\Program Files\PostgreSQL\17\bin\psql.exe" "postgresql://afvr_apitofinal_user:jJ84f52C0zDdtzB2qf0tI95xa94jHX96@dpg-dbu84n8m7kps73b9a3ug-a.oregon-postgres.render.com/afvr_resultados"
+
