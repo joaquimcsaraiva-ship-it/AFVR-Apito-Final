@@ -1221,15 +1221,15 @@ async function handleGlobalSearch() {
 
   } catch (error) {
 
-    console.error(
-      "GLOBAL_SEARCH_ERROR",
-      error
-    );
+  console.error(
+    "GLOBAL_SEARCH_ERROR",
+    error
+  );
 
-    alert(
-      "Erro ao executar pesquisa."
-    );
-  }
+  alert(
+    error?.message || String(error)
+  );
+}
 }
 $("#search").addEventListener("input", render);
 $("#globalSearch")?.addEventListener(
