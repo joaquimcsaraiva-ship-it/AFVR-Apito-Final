@@ -969,6 +969,8 @@ request("/api/results/dashboard")
 
     $("#dashboardConflicts").textContent =
       summary.conflicts ?? 0;
+$("#dashboardScheduled").textContent =
+  summary.scheduledMatches ?? 0;
 const nextMatchesHtml =
   (summary.nextMatches || [])
     .slice(0, 5)
