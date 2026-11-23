@@ -1015,43 +1015,6 @@ $("#dashboardNextMatches").innerHTML =
         Sem jogos agendados.
       </div>
     `;
-
-const lastResultsHtml =
-  (summary.lastResults || [])
-    .slice(0, 8)
-    .map(match => `
-      <div class="result-card">
-        ${escapeHtml(match.home_team)}
-        vs
-        ${escapeHtml(match.away_team)}
-      </div>
-    `)
-    .join("");
-
-$("#dashboardLastResults").innerHTML =
-  lastResultsHtml
-    ? `
-      <div class="results-cards">
-        ${lastResultsHtml}
-      </div>
-    `
-    : `
-      <div class="empty">
-        Sem resultados disponíveis.
-      </div>
-    `;
-$("#dashboardLastResults").innerHTML =
-  lastResultsHtml
-    ? `
-      <div class="results-cards">
-        ${lastResultsHtml}
-      </div>
-    `
-    : `
-      <div class="empty">
-        Sem resultados disponíveis.
-      </div>
-    `;
   })
   .catch(() => {
   $("#dashboardMatches").textContent = "0";
