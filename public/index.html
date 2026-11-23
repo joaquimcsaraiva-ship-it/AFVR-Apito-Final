@@ -938,10 +938,21 @@ table {
         const query = $("#search").value.trim().toLocaleLowerCase("pt-PT");
         const season = $("#seasonFilter").value;
         const sport = $("#sportFilter").value;
-        return state.competitions.filter((item) =>
-          (!query || item.name.toLocaleLowerCase("pt-PT").includes(query)) &&
-          (!season || item.season === season) && (!sport || item.sport === sport)
-        );
+        return state.competitions.filter((item) => {
+  const searchText = [
+    item.name,
+    item.season,
+    sportName(item.sport)
+  ]
+    .join(" ")
+    .toLocaleLowerCase("pt-PT");
+
+  return (
+    (!query || searchText.includes(query)) &&
+    (!season || item.season === season) &&
+    (!sport || item.sport === sport)
+  );
+});
       }
 
       function render() {
@@ -1187,23 +1198,39 @@ $("#heroCompetitions").textContent =
       $("#cancelModal").addEventListener("click", closeModal);
       $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === $("#modalBackdrop")) closeModal(); });
       document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modalBackdrop").hidden) closeModal(); });
-function handleGlobalSearch() {
+async function handleGlobalSearch() {
   const term = $("#globalSearch")?.value?.trim();
 
-  if (!term) return;
-
-  if ($("#search")) {
-    $("#search").value = term;
+  if (!term) {
+    return;
   }
 
-  const competitionsNav = $("#competitionsNav");
+  try {
+    const results = await request(
+      `/api/results/search?q=${encodeURIComponent(term)}`
+    );
 
-  if (competitionsNav) {
-    competitionsNav.click();
+    console.log(
+      "GLOBAL_SEARCH_RESULTS",
+      results
+    );
+
+    alert(
+      `Encontrados ${results.length} jogos para "${term}"`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "GLOBAL_SEARCH_ERROR",
+      error
+    );
+
+    alert(
+      "Erro ao executar pesquisa."
+    );
   }
-
-  render();
-}      
+}
 $("#search").addEventListener("input", render);
 $("#globalSearch")?.addEventListener(
   "keydown",
