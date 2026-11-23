@@ -1187,7 +1187,32 @@ $("#heroCompetitions").textContent =
       $("#cancelModal").addEventListener("click", closeModal);
       $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === $("#modalBackdrop")) closeModal(); });
       document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modalBackdrop").hidden) closeModal(); });
-      $("#search").addEventListener("input", render);
+function handleGlobalSearch() {
+  const term = $("#globalSearch")?.value?.trim();
+
+  if (!term) return;
+
+  if ($("#search")) {
+    $("#search").value = term;
+  }
+
+  const competitionsNav = $("#competitionsNav");
+
+  if (competitionsNav) {
+    competitionsNav.click();
+  }
+
+  render();
+}      
+$("#search").addEventListener("input", render);
+$("#globalSearch")?.addEventListener(
+  "keydown",
+  (event) => {
+    if (event.key === "Enter") {
+      handleGlobalSearch();
+    }
+  }
+);
       $("#seasonFilter").addEventListener("change", render);
       $("#sportFilter").addEventListener("change", render);
 
