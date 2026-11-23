@@ -33,6 +33,12 @@ app.get(["/dashboard", "/competitions", "/results"], (_req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
+app.get("/test-search", (_req, res) => {
+  res.json({
+    ok: true,
+    message: "search route test"
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/competitions", competitionRoutes);
 app.use("/api/results", resultRoutes);

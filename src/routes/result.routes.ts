@@ -19,6 +19,10 @@ router.get(
   "/dashboard",
   controller.getDashboard
 );
+router.get(
+  "/search",
+  controller.search
+);
 router.get("/", controller.getByCompetition);
 router.get("/standings", controller.getStandings);
 

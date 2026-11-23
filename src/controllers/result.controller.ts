@@ -47,7 +47,24 @@ export async function getByCompetition(req: Request, res: Response): Promise<voi
   }
   res.json(await repository.listByCompetition(competitionId));
 }
+export async function search(
+  req: Request,
+  res: Response
+): Promise<void> {
 
+  const query =
+    String(req.query.q || "").trim();
+
+  if (!query) {
+    res.json([]);
+    return;
+  }
+
+  const matches =
+    await repository.searchMatches(query);
+
+  res.json(matches);
+}
 export async function getStandings(
   req: Request,
   res: Response

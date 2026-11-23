@@ -111,6 +111,25 @@ export async function listByCompetition(competitionId: number): Promise<MatchRes
   );
   return result.rows.map(mapMatch);
 }
+export async function searchMatches(
+  query: string
+): Promise<MatchResult[]> {
+
+  const result = await pool.query(
+    `
+    SELECT ${matchColumns}
+    FROM matches
+    WHERE
+      home_team ILIKE $1
+      OR away_team ILIKE $1
+    ORDER BY played_at DESC
+    LIMIT 50
+    `,
+    [`%${query}%`]
+  );
+
+  return result.rows.map(mapMatch);
+}
 export async function listConflicts() {
   const result = await pool.query(
     `
