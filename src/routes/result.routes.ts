@@ -21,12 +21,7 @@ router.get(
 );
 router.get(
   "/search",
-  (_req, res) => {
-    res.json({
-      route: "search",
-      ok: true
-    });
-  }
+  controller.search
 );
 router.get("/", controller.getByCompetition);
 router.get("/standings", controller.getStandings);

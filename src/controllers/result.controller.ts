@@ -52,6 +52,11 @@ export async function search(
   res: Response
 ): Promise<void> {
 
+  console.log(
+    "SEARCH_QUERY",
+    req.query.q
+  );
+
   const query =
     String(req.query.q || "").trim();
 
@@ -62,6 +67,11 @@ export async function search(
 
   const matches =
     await repository.searchMatches(query);
+
+  console.log(
+    "SEARCH_RESULTS",
+    matches.length
+  );
 
   res.json(matches);
 }
