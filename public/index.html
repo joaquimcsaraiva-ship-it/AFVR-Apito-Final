@@ -223,53 +223,32 @@
 }
 
 .next-match-card {
-  background: white;
-  border-radius: 16px;
-  padding: 18px;
-  border: 1px solid #e5e7eb;
-  transition: .2s ease;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
   text-align: center;
-}
-
-.next-match-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
 }
 
 .next-home,
 .next-away {
-  font-size: 15px;
-  font-weight: 800;
-  color: #041833;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .next-vs {
-  margin: 10px 0;
+  margin: 8px 0;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
-  color: #94a3b8;
 }
 
 .next-date {
-  margin-top: 12px;
+  margin-top: 10px;
+  color: var(--blue);
   font-size: 13px;
-  font-weight: 700;
-  color: #082a68;
-}
-
-.next-league {
-  margin-bottom: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.next-time {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #16a34a;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .panel {
@@ -338,78 +317,38 @@
 
 .result-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 18px;
-  border: 1px solid #e5e7eb;
-  transition: .2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  border-left: 4px solid #22c55e;
 }
 
-.result-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+.result-card.conflict {
+  border-left-color: #f59e0b;
 }
 
-.result-league {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-
-.result-row {
+.result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
 }
 
-.result-team-column {
-  flex: 1;
-}
-
-.result-team {
-  font-weight: 700;
-  padding: 4px 0;
-  color: #64748b;
-}
-
-.result-team.winner {
+.result-score {
+  font-size: 24px;
   font-weight: 800;
-  color: #041833;
 }
 
-.result-score-big {
-  font-size: 36px;
-  font-weight: 900;
-  color: #041833;
-  min-width: 110px;
-  text-align: center;
-}
-
-.result-score-big span {
-  color: #94a3b8;
-  margin: 0 4px;
-}
-
-.result-footer {
-  margin-top: 12px;
+.result-teams {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .result-status {
-  color: #16a34a;
+  margin-top: 12px;
   font-size: 12px;
-  font-weight: 700;
-}
-
-.result-date {
   color: #64748b;
-  font-size: 12px;
 }
-
 .match-conflict td {
   font-weight: 600;
 }
@@ -1032,45 +971,24 @@ request("/api/results/dashboard")
       summary.conflicts ?? 0;
 const nextMatchesHtml =
   (summary.nextMatches || [])
+    .slice(0, 5)
+    .map(match => `
+      <div class="next-match-card">
+        <div class="next-home">
+          ${escapeHtml(match.home_team)}
+        </div>
 
-.map(match => `
-  <div class="next-match-card">
+        <div class="next-vs">VS</div>
 
-    <div class="next-league">
-      ${escapeHtml(
-        match.competition_name ||
-        match.competition ||
-        "Competição"
-      )}
-    </div>
+        <div class="next-away">
+          ${escapeHtml(match.away_team)}
+        </div>
 
-    <div class="next-home">
-      ${escapeHtml(match.home_team)}
-    </div>
-
-    <div class="next-vs">
-      VS
-    </div>
-
-    <div class="next-away">
-      ${escapeHtml(match.away_team)}
-    </div>
-
-    <div class="next-date">
-      ${new Date(match.played_at)
-        .toLocaleDateString("pt-PT")}
-    </div>
-
-    <div class="next-time">
-      ${new Date(match.played_at)
-        .toLocaleTimeString("pt-PT", {
-          hour: "2-digit",
-          minute: "2-digit"
-        })}
-    </div>
-
-  </div>
-`)
+        <div class="next-date">
+          ${new Date(match.played_at).toLocaleDateString("pt-PT")}
+        </div>
+      </div>
+    `)
     .join("");
 $("#dashboardNextMatches").innerHTML =
   nextMatchesHtml
@@ -1089,57 +1007,23 @@ const lastResultsHtml =
   (summary.lastResults || [])
     .slice(0, 8)
     .map(match => `
-      <div class="result-card ${match.conflict ? "conflict" : ""}">
-
-        <div class="result-league">
-          ${escapeHtml(
-  match.competition_name ||
-  match.competition ||
-  "Competição"
-)}
-        </div>
-
-        <div class="result-row">
-
-          <div class="result-team-column">
-            <div class="result-team ${
-  (match.home_score ?? 0) >
-  (match.away_score ?? 0)
-    ? "winner"
-    : ""
-}">
-  ${escapeHtml(match.home_team)}
-</div>
-
-<div class="result-team ${
-  (match.away_score ?? 0) >
-  (match.home_score ?? 0)
-    ? "winner"
-    : ""
-}">
-  ${escapeHtml(match.away_team)}
-</div>
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-teams">
+            <strong>${escapeHtml(match.home_team)}</strong>
+            <strong>${escapeHtml(match.away_team)}</strong>
           </div>
 
-          <div class="result-score-big">
+          <div class="result-score">
             ${match.home_score ?? 0}
-            <span>-</span>
+            -
             ${match.away_score ?? 0}
           </div>
-
         </div>
 
-        <div class="result-footer">
-          <span class="result-status">
-            Finalizado
-          </span>
-
-          <span class="result-date">
-            ${new Date(match.played_at)
-              .toLocaleDateString("pt-PT")}
-          </span>
+        <div class="result-status">
+          ${new Date(match.played_at).toLocaleDateString("pt-PT")}
         </div>
-
       </div>
     `)
     .join("");
