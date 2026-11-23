@@ -522,15 +522,24 @@ if (
     [externalId]
   );
 
-  if (existingExternalId.rowCount) {
+  if (
+    existingExternalId.rowCount &&
+    existingExternalId.rows[0].id !==
+      scheduledMatchByTeams.rows[0].id
+  ) {
+
     console.warn(
-      "EXTERNAL_ID_ALREADY_EXISTS",
+      "SKIPPED_DUPLICATE_EXTERNAL_ID",
       {
         externalId,
-        existingId: existingExternalId.rows[0].id,
-        targetId: scheduledMatchByTeams.rows[0].id
+        existingId:
+          existingExternalId.rows[0].id,
+        targetId:
+          scheduledMatchByTeams.rows[0].id
       }
     );
+
+    continue;
   }
 
   await client.query(
