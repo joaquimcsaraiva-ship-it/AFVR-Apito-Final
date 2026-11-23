@@ -653,8 +653,8 @@ table {
         competições AFVR.
       </p>
 <div class="hero-highlights">
-  <span>⚽ 2142 Jogos</span>
-  <span>🏆 32 Competições</span>
+  <span id="heroMatches">⚽ Jogos</span>
+  <span id="heroCompetitions">🏆 Competições</span>
   <span>✅ Dados Oficiais FPF</span>
 </div>
     </div>
@@ -1000,6 +1000,8 @@ request("/api/results/dashboard")
   .then((summary) => {
     $("#dashboardMatches").textContent =
       summary.totalMatches ?? 0;
+$("#heroMatches").textContent =
+  `⚽ ${summary.totalMatches ?? 0} Jogos`;
 
     $("#dashboardFpf").textContent =
       summary.fpfMatches ?? 0;
@@ -1089,6 +1091,11 @@ $("#dashboardLastResults").innerHTML =
   $("#dashboardManual").textContent = "0";
   $("#dashboardConflicts").textContent = "0";
   $("#dashboardScheduled").textContent = "0";
+$("#heroMatches").textContent =
+  "⚽ 0 Jogos";
+
+$("#heroCompetitions").textContent =
+  "🏆 0 Competições";
 
   $("#dashboardNextMatches").innerHTML =
     '<div class="error">Não foi possível carregar os próximos jogos.</div>';
@@ -1118,6 +1125,8 @@ $("#dashboardLastResults").innerHTML =
         $("#tableRegion").innerHTML = '<div class="loading">A carregar competições…</div>';
         try {
           state.competitions = await request(API);
+$("#heroCompetitions").textContent =
+  `🏆 ${state.competitions.length} Competições`;
           $("#dashboardPage").hidden = pageKey !== "dashboard";
           $("#competitionsPage").hidden = pageKey !== "competitions";
           $("#resultsPage").hidden = pageKey !== "results";
