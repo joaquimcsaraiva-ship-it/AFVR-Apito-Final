@@ -969,6 +969,27 @@ request("/api/results/dashboard")
 
     $("#dashboardConflicts").textContent =
       summary.conflicts ?? 0;
+const nextMatchesHtml =
+  (summary.nextMatches || [])
+    .slice(0, 5)
+    .map(match => `
+      <div class="next-match-card">
+        <div class="next-home">
+          ${escapeHtml(match.home_team)}
+        </div>
+
+        <div class="next-vs">VS</div>
+
+        <div class="next-away">
+          ${escapeHtml(match.away_team)}
+        </div>
+
+        <div class="next-date">
+          ${new Date(match.played_at).toLocaleDateString("pt-PT")}
+        </div>
+      </div>
+    `)
+    .join("");
 $("#dashboardNextMatches").innerHTML =
   nextMatchesHtml
     ? `
@@ -986,7 +1007,24 @@ const lastResultsHtml =
   (summary.lastResults || [])
     .slice(0, 8)
     .map(match => `
-      ...
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-teams">
+            <strong>${escapeHtml(match.home_team)}</strong>
+            <strong>${escapeHtml(match.away_team)}</strong>
+          </div>
+
+          <div class="result-score">
+            ${match.home_score ?? 0}
+            -
+            ${match.away_score ?? 0}
+          </div>
+        </div>
+
+        <div class="result-status">
+          ${new Date(match.played_at).toLocaleDateString("pt-PT")}
+        </div>
+      </div>
     `)
     .join("");
 
@@ -1000,19 +1038,6 @@ $("#dashboardLastResults").innerHTML =
     : `
       <div class="empty">
         Sem resultados disponíveis.
-      </div>
-    `;
-
-$("#dashboardNextMatches").innerHTML =
-  nextMatchesHtml
-    ? `
-      <div class="next-matches-list">
-        ${nextMatchesHtml}
-      </div>
-    `
-    : `
-      <div class="empty">
-        Sem jogos agendados.
       </div>
     `;
   })
