@@ -88,7 +88,12 @@
 
     .button-quiet { color: #526477; background: white; border-color: var(--line); }
     .button-quiet:hover { background: #f6f9fb; }
-    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
     .stat { padding: 19px 21px; background: white; border: 1px solid var(--line); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
     .stat-label { color: var(--muted); font-size: 12px; font-weight: 600; }
     .stat-value { margin-top: 3px; font: 800 27px/1.2 Manrope, sans-serif; }
@@ -97,12 +102,10 @@
     .stat:nth-child(3) .stat-icon { background: var(--amber-soft); color: var(--amber); }
 .homepage-layout {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 1fr;
   gap: 24px;
-  margin-top: 24px;
   align-items: start;
 }
-
 .homepage-main,
 .homepage-side {
   display: flex;
@@ -123,11 +126,6 @@
   color: #fff;
 }
 
-.featured-content {
-  gap: 4px;
-  padding: 12px;
-}
-
 .featured-team {
   font-size: 18px;
   margin: 0;
@@ -138,9 +136,6 @@
   color: rgba(255,255,255,.75);
 }
 
-.featured-date {
-  font-size: 14px;
-}
 .hero-results {
   background: linear-gradient(
     135deg,
@@ -218,7 +213,50 @@
   border-radius: 999px;
   font-size: 13px;
 }
-.panel { background: white; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+
+/* Próximos Jogos */
+
+.next-matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.next-match-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.next-home,
+.next-away {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.next-vs {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.next-date {
+  margin-top: 10px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
     .panel-head { padding: 19px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .panel-title { margin: 0; font: 700 16px Manrope, sans-serif; }
     .panel-help { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
@@ -279,8 +317,8 @@
 
 .result-card {
   background: white;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 18px;
+  padding: 18px;
   box-shadow: 0 4px 12px rgba(0,0,0,.08);
   border-left: 4px solid #22c55e;
 }
@@ -344,6 +382,17 @@
     .empty h3 { margin: 0 0 5px; font: 700 17px Manrope, sans-serif; }
     .empty p { max-width: 370px; margin: 0 auto 18px; color: var(--muted); font-size: 13px; }
     .loading, .error { color: var(--muted); }
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.retry-button {
+  margin-top: 4px;
+}
     .error { color: var(--red); }
     .footer { padding: 14px 21px; border-top: 1px solid var(--line); color: #8795a3; font-size: 11px; }
     .toast { position: fixed; right: 24px; bottom: 24px; z-index: 5; max-width: min(400px, calc(100vw - 32px)); padding: 13px 17px; border-radius: 9px; color: white; background: var(--navy); box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s ease; }
@@ -652,9 +701,6 @@ table {
 </article>
 
 </section>
-<div class="homepage-layout">
-
-  <div class="homepage-main">
 
 <section class="panel">
   <div class="panel-head">
@@ -677,39 +723,6 @@ table {
   <div id="dashboardNextMatches">
     <div class="loading">A carregar jogos...</div>
   </div>
-</section>
-
-<section class="panel featured-panel">
-  <div class="panel-head">
-    <h2 class="panel-title">
-      🔥 Jogo da Semana
-    </h2>
-  </div>
-
-  <div class="featured-content">
-
-    <div class="featured-league">
-      Campeonato Distrital Divisão Honra
-    </div>
-
-    <div class="featured-team">
-      CDC Montalegre
-    </div>
-
-    <div class="featured-vs">
-      VS
-    </div>
-
-    <div class="featured-team">
-      GD Chaves
-    </div>
-
-    <div class="featured-date">
-      Domingo • 15:00
-    </div>
-
-  </div>
-
 </section>
 
 </aside>
@@ -960,64 +973,35 @@ const nextMatchesHtml =
   (summary.nextMatches || [])
     .slice(0, 5)
     .map(match => `
-      <tr>
-        <td>${escapeHtml(match.home_team)}</td>
-        <td>${escapeHtml(match.away_team)}</td>
-        <td>
+      <div class="next-match-card">
+        <div class="next-home">
+          ${escapeHtml(match.home_team)}
+        </div>
+
+        <div class="next-vs">
+          VS
+        </div>
+
+        <div class="next-away">
+          ${escapeHtml(match.away_team)}
+        </div>
+
+        <div class="next-date">
           ${new Date(match.played_at).toLocaleDateString("pt-PT")}
-          <br>
-          <small>
-            ${new Date(match.played_at).toLocaleTimeString("pt-PT", {
-              hour: "2-digit",
-              minute: "2-digit"
-            })}
-          </small>
-        </td>
-      </tr>
-    `)
-    .join("");
-const lastResultsHtml =
-  (summary.lastResults || [])
-    .slice(0, 5)
-    .map(match => `
-      <div class="result-card ${match.conflict_detected ? "conflict" : ""}">
-
-        <div class="result-header">
-
-          <div class="result-teams">
-            <div>${escapeHtml(match.home_team)}</div>
-            <div>${escapeHtml(match.away_team)}</div>
-          </div>
-
-          <div class="result-score">
-            ${match.home_score} - ${match.away_score}
-          </div>
-
+          ·
+          ${new Date(match.played_at).toLocaleTimeString("pt-PT", {
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
         </div>
-
-        <div class="result-status">
-          ${match.conflict_detected ? "⚠️ Conflito" : "✅ Oficial"}
-        </div>
-
       </div>
     `)
     .join("");
 $("#dashboardNextMatches").innerHTML =
   nextMatchesHtml
     ? `
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Casa</th>
-              <th>Visitante</th>
-              <th>Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${nextMatchesHtml}
-          </tbody>
-        </table>
+      <div class="next-matches-list">
+        ${nextMatchesHtml}
       </div>
     `
     : `
@@ -1099,8 +1083,21 @@ $("#dashboardLastResults").innerHTML =
           $("#competitionsPage").hidden = pageKey !== "competitions";
           $("#resultsPage").hidden = pageKey !== "results";
           $("#dashboardList").innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
-          $("#tableRegion").innerHTML = `<div class="error">${escapeHtml(error.message)}<br><br><button class="button button-quiet" data-action="retry">Tentar novamente</button></div>`;
-        }
+          $("#tableRegion").innerHTML = `
+  <div class="error">
+    <div class="error-message">
+      ${escapeHtml(error.message)}
+    </div>
+
+    <button
+      class="button button-quiet retry-button"
+      data-action="retry"
+    >
+      Tentar novamente
+    </button>
+  </div>
+`;
+
       }
 
       function openModal(item = null) {
