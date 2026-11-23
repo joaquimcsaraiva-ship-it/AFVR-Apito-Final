@@ -1030,6 +1030,9 @@ request("/api/results/dashboard")
 
     $("#dashboardConflicts").textContent =
       summary.conflicts ?? 0;
+const nextMatchesHtml =
+  (summary.nextMatches || [])
+
 .map(match => `
   <div class="next-match-card">
 
