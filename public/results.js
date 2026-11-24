@@ -96,7 +96,19 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </table>
 </div>
 `;
-    if (!$("#resultCompetition").value) {
+    
+console.log(
+  "RENDER:",
+  {
+    competition:
+      $("#resultCompetition").value,
+    searchTerm,
+    matches:
+      state.matches.length
+  }
+);
+
+if (!$("#resultCompetition").value) {
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
       return;
     }
