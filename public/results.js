@@ -694,12 +694,21 @@ if (
   });
 
   loadCompetitions()
-  .then(renderMatches)
+  .then(() => {
+
+    if (searchTerm) {
+      return loadMatches();
+    }
+
+    renderMatches();
+
+  })
   .catch((error) => {
+
     $("#resultsList").innerHTML =
       `<div class="error">${escapeHtml(error.message)}</div>`;
-  });
 
+  });
 loadConflicts();
 
 })();
