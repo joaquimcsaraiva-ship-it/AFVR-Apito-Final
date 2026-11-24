@@ -3,6 +3,11 @@
 
   const $ = (selector) => document.querySelector(selector);
   const state = { competitions: [], matches: [], uploadRows: [] };
+
+const searchTerm =
+  new URLSearchParams(
+    window.location.search
+  ).get("search");
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
   async function api(url, options) {
@@ -97,7 +102,20 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
     }
 const now = new Date();
 
-const playedMatches = state.matches
+const filteredMatches =
+  searchTerm
+    ? state.matches.filter(match =>
+        match.homeTeam
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+        ||
+        match.awayTeam
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+    : state.matches;
+
+const playedMatches = filteredMatches
   .filter(match =>
     match.playedAt &&
     new Date(match.playedAt) <= now
@@ -107,7 +125,8 @@ const playedMatches = state.matches
       new Date(b.playedAt) - new Date(a.playedAt)
   );
 
-const upcomingMatches = state.matches
+const upcomingMatches = filteredMatches
+
   .filter(match =>
     match.playedAt &&
     new Date(match.playedAt) > now
