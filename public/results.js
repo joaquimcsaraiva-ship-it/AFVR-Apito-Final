@@ -92,10 +92,13 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </table>
 </div>
 `;
-    if (!$("#resultCompetition").value) {
-      region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
-      return;
-    }
+    if (
+  !$("#resultCompetition").value &&
+  !searchTerm
+) {
+  region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
+  return;
+}
     if (!state.matches.length) {
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Sem jogos registados</h3><p>Sincronize os jogos da FPF, registe um jogo ou importe um ficheiro CSV.</p></div>';
       return;
@@ -332,46 +335,12 @@ function updateTeamsDatalist(matches) {
   const competitionId =
     $("#resultCompetition").value;
 
-if (searchTerm) {
-
-  $("#resultsList").innerHTML =
-    '<div class="loading">A pesquisar jogos...</div>';
-
-  try {
-
-    const matches =
-      await api(
-        `/api/results/search?q=${encodeURIComponent(searchTerm)}`
-      );
-
-    state.matches = matches;
-
-    updateTeamsDatalist(matches);
-
+  if (!competitionId) {
+    state.matches = [];
     renderMatches();
-
-    $("#resultsFooter").textContent =
-      `🔍 Pesquisa ativa: ${searchTerm}`;
-
+    renderStandings([]);
     return;
-
-  } catch (error) {
-
-    $("#resultsList").innerHTML =
-      `<div class="error">${escapeHtml(error.message)}</div>`;
-
-    return;
-
   }
-
-}
-
-  if (!competitionId && !searchTerm) {
-  state.matches = [];
-  renderMatches();
-  renderStandings([]);
-  return;
-}
 
   $("#resultsList").innerHTML =
     '<div class="loading">A carregar jogos…</div>';
