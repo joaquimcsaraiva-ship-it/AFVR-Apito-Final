@@ -613,6 +613,14 @@ table {
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,.15);
   box-shadow: 0 4px 10px rgba(0,0,0,.15);
+
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.search-result:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.20);
 }
 
 .search-teams {
@@ -1267,7 +1275,10 @@ async function handleGlobalSearch() {
     <h3>${results.length} jogos encontrados</h3>
   ` +
   firstResults.map(match => `
-    <div class="search-result">
+    <div
+  class="search-result"
+  onclick="openSearchResult('${term}')"
+>
 
       <div class="search-teams">
         <span>${match.homeTeam}</span>
@@ -1300,6 +1311,14 @@ async function handleGlobalSearch() {
 
   }
 }
+
+function openSearchResult(term) {
+
+  window.location.href =
+    `/results?search=${encodeURIComponent(term)}`;
+
+}
+
 $("#search").addEventListener("input", render);
 $("#globalSearch")?.addEventListener(
   "keydown",
