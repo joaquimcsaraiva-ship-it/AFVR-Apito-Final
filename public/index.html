@@ -1288,13 +1288,13 @@ async function handleGlobalSearch() {
     <h3>${results.length} jogos encontrados</h3>
 
     <p class="search-summary">
-      A apresentar os 10 mais recentes
+      A apresentar os primeiros 10 resultados 
     </p>
   ` +
   firstResults.map(match => `
     <div
   class="search-result"
-  onclick="openSearchResult(${match.id})"
+  onclick="openSearchResult('${term}')"
 >
 
       <div class="search-teams">
@@ -1334,10 +1334,10 @@ async function handleGlobalSearch() {
   }
 }
 
-function openSearchResult(matchId) {
+function openSearchResult(term) {
 
   window.location.href =
-    `/results?matchId=${matchId}`;
+    `/results?search=${encodeURIComponent(term)}`;
 
 }
 
