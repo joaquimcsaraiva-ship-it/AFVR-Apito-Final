@@ -51,6 +51,16 @@ console.log(
 
   function renderMatches() {
     const region = $("#resultsList");
+console.log(
+  "RENDER CALL",
+  {
+    searchTerm,
+    competition:
+      $("#resultCompetition").value,
+    matches:
+      state.matches.length
+  }
+);
 const renderTable = (matches) => `
 <div class="table-wrap">
 <table>
