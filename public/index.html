@@ -1228,62 +1228,43 @@ $("#heroCompetitions").textContent =
       $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === $("#modalBackdrop")) closeModal(); });
       document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modalBackdrop").hidden) closeModal(); });
 async function handleGlobalSearch() {
-  const term = $("#globalSearch")?.value?.trim();
+
+  const term =
+    $("#globalSearch")?.value?.trim();
 
   if (!term) {
     return;
   }
 
   try {
+
     const results = await request(
       `/api/results/search?q=${encodeURIComponent(term)}`
     );
 
-    console.log(
-      "GLOBAL_SEARCH_RESULTS",
-      results
-    );
-
     const firstResults =
-  results.slice(0, 10);
+      results.slice(0, 10);
 
-const html =
-  firstResults.map(match => `
-    <div class="search-result">
-      <strong>${match.homeTeam}</strong>
-      vs
-      <strong>${match.awayTeam}</strong>
-    </div>
-  `).join("");
-
-const firstResults =
-  results.slice(0, 10);
-
-$("#searchResults").innerHTML =
-  `
-    <h3>${results.length} jogos encontrados</h3>
-  ` +
-  firstResults.map(match => `
-    <div class="search-result">
-      <strong>${match.homeTeam}</strong>
-      vs
-      <strong>${match.awayTeam}</strong>
-    </div>
-  `).join("");
-
-console.log(html);
+    $("#searchResults").innerHTML =
+      `
+        <h3>${results.length} jogos encontrados</h3>
+      ` +
+      firstResults.map(match => `
+        <div class="search-result">
+          <strong>${match.homeTeam}</strong>
+          vs
+          <strong>${match.awayTeam}</strong>
+        </div>
+      `).join("");
 
   } catch (error) {
 
-  console.error(
-    "GLOBAL_SEARCH_ERROR",
-    error
-  );
+    console.error(
+      "GLOBAL_SEARCH_ERROR",
+      error
+    );
 
-  alert(
-    error?.message || String(error)
-  );
-}
+  }
 }
 $("#search").addEventListener("input", render);
 $("#globalSearch")?.addEventListener(
