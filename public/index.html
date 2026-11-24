@@ -593,7 +593,32 @@ table {
       .sync-fields .form-row { flex: auto; }
       .sync-fields .button { width: 100%; }
     }
-  </style>
+#searchResults {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#searchResults h3 {
+  color: #ffffff;
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.search-result {
+  background: rgba(255,255,255,.95);
+  color: #111827;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.search-result strong {
+  color: #0f172a;
+}  
+</style>
 </head>
 <body>
 <div id="mobileOverlay" class="mobile-overlay" hidden></div>
@@ -662,15 +687,16 @@ table {
     <div class="hero-right">
 
       <input
-        id="globalSearch"
-        type="text"
-        placeholder="🔍 Procurar equipa, competição ou jogador"
-      />
+  id="globalSearch"
+  type="text"
+  placeholder="🔍 Procurar equipa..."
+>
 
-      <div class="hero-actions">
-        <a class="button button-primary" href="/results">
-          Ver Resultados
-        </a>
+<button>
+  Ver Resultados
+</button>
+
+<div id="searchResults"></div>
 
         <a class="button button-quiet" href="/competitions">
           Competições
@@ -1215,9 +1241,34 @@ async function handleGlobalSearch() {
       results
     );
 
-    alert(
-      `Encontrados ${results.length} jogos para "${term}"`
-    );
+    const firstResults =
+  results.slice(0, 10);
+
+const html =
+  firstResults.map(match => `
+    <div class="search-result">
+      <strong>${match.homeTeam}</strong>
+      vs
+      <strong>${match.awayTeam}</strong>
+    </div>
+  `).join("");
+
+const firstResults =
+  results.slice(0, 10);
+
+$("#searchResults").innerHTML =
+  `
+    <h3>${results.length} jogos encontrados</h3>
+  ` +
+  firstResults.map(match => `
+    <div class="search-result">
+      <strong>${match.homeTeam}</strong>
+      vs
+      <strong>${match.awayTeam}</strong>
+    </div>
+  `).join("");
+
+console.log(html);
 
   } catch (error) {
 
