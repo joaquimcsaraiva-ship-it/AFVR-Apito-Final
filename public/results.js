@@ -8,6 +8,10 @@ const searchTerm =
   new URLSearchParams(
     window.location.search
   ).get("search");
+console.log(
+  "SEARCH TERM:",
+  searchTerm
+);
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
   async function api(url, options) {
