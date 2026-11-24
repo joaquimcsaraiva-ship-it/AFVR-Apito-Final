@@ -255,11 +255,15 @@ region.innerHTML = `
 function renderStandings(rows) {
   const region = $("#standingsList");
 
- if (!$("#resultCompetition").value) {
-      region.innerHTML = '<div class="empty">Selecione uma competição para consultar a classificação.</div>';
-      $("#standingsFooter").textContent = "";
-      return;
-    }
+ if (
+  !$("#resultCompetition").value &&
+  !searchTerm
+) {
+  region.innerHTML =
+    '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
+
+  return;
+}
     if (!rows.length) {
       region.innerHTML = '<div class="empty">Ainda não há resultados suficientes para calcular uma classificação nesta competição.</div>';
       $("#standingsFooter").textContent = "Apenas competições em formato de campeonato apresentam classificação.";
