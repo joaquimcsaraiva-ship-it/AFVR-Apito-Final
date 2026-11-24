@@ -118,10 +118,15 @@ console.log(
   }
 );
 
-if (!$("#resultCompetition").value) {
-      region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
-      return;
-    }
+if (
+  !$("#resultCompetition").value &&
+  !searchTerm
+) {
+  region.innerHTML =
+    '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
+
+  return;
+}
     if (!state.matches.length) {
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Sem jogos registados</h3><p>Sincronize os jogos da FPF, registe um jogo ou importe um ficheiro CSV.</p></div>';
       return;
