@@ -92,13 +92,10 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </table>
 </div>
 `;
-    if (
-  !$("#resultCompetition").value &&
-  !searchTerm
-) {
-  region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
-  return;
-}
+    if (!$("#resultCompetition").value) {
+      region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
+      return;
+    }
     if (!state.matches.length) {
       region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Sem jogos registados</h3><p>Sincronize os jogos da FPF, registe um jogo ou importe um ficheiro CSV.</p></div>';
       return;
@@ -255,15 +252,11 @@ region.innerHTML = `
 function renderStandings(rows) {
   const region = $("#standingsList");
 
- if (
-  !$("#resultCompetition").value &&
-  !searchTerm
-) {
-  region.innerHTML =
-    '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
-
-  return;
-}
+ if (!$("#resultCompetition").value) {
+      region.innerHTML = '<div class="empty">Selecione uma competição para consultar a classificação.</div>';
+      $("#standingsFooter").textContent = "";
+      return;
+    }
     if (!rows.length) {
       region.innerHTML = '<div class="empty">Ainda não há resultados suficientes para calcular uma classificação nesta competição.</div>';
       $("#standingsFooter").textContent = "Apenas competições em formato de campeonato apresentam classificação.";
@@ -339,12 +332,54 @@ function updateTeamsDatalist(matches) {
   const competitionId =
     $("#resultCompetition").value;
 
-  if (!competitionId) {
-    state.matches = [];
+if (searchTerm) {
+
+  $("#resultsList").innerHTML =
+    '<div class="loading">A pesquisar jogos...</div>';
+
+  try {
+
+    const matches =
+      await api(
+        `/api/results/search?q=${encodeURIComponent(searchTerm)}`
+      );
+
+    state.matches = matches;
+
+    updateTeamsDatalist(matches);
+console.log(
+  "SEARCH MATCHES:",
+  matches.length
+);
+
+console.log(
+  "STATE MATCHES:",
+  state.matches.length
+);
     renderMatches();
-    renderStandings([]);
+
+    $("#resultsFooter").textContent =
+      `🔍 Pesquisa ativa: ${searchTerm}`;
+
     return;
+
+  } catch (error) {
+
+    $("#resultsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
+
+    return;
+
   }
+
+}
+
+  if (!competitionId && !searchTerm) {
+  state.matches = [];
+  renderMatches();
+  renderStandings([]);
+  return;
+}
 
   $("#resultsList").innerHTML =
     '<div class="loading">A carregar jogos…</div>';
@@ -655,13 +690,7 @@ if (
   });
 
   loadCompetitions()
-  .then(() => {
-    if (searchTerm) {
-      return loadMatches();
-    }
-
-    renderMatches();
-  })
+  .then(renderMatches)
   .catch((error) => {
     $("#resultsList").innerHTML =
       `<div class="error">${escapeHtml(error.message)}</div>`;
