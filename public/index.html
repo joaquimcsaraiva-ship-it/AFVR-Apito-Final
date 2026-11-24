@@ -620,7 +620,7 @@ table {
 
 .search-result:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,.20);
+  box-shadow: 0 10px 20px rgba(0,0,0,.20);
 }
 
 .search-teams {
@@ -1277,7 +1277,7 @@ async function handleGlobalSearch() {
   firstResults.map(match => `
     <div
   class="search-result"
-  onclick="openSearchResult('${term}')"
+  onclick="openSearchResult(${match.id})"
 >
 
       <div class="search-teams">
@@ -1316,6 +1316,13 @@ function openSearchResult(term) {
 
   window.location.href =
     `/results?search=${encodeURIComponent(term)}`;
+
+}
+
+function openSearchResult(matchId) {
+
+  window.location.href =
+    `/results?matchId=${matchId}`;
 
 }
 
