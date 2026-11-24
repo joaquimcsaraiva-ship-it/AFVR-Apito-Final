@@ -332,12 +332,46 @@ function updateTeamsDatalist(matches) {
   const competitionId =
     $("#resultCompetition").value;
 
-  if (!competitionId) {
-    state.matches = [];
+if (searchTerm) {
+
+  $("#resultsList").innerHTML =
+    '<div class="loading">A pesquisar jogos...</div>';
+
+  try {
+
+    const matches =
+      await api(
+        `/api/results/search?q=${encodeURIComponent(searchTerm)}`
+      );
+
+    state.matches = matches;
+
+    updateTeamsDatalist(matches);
+
     renderMatches();
-    renderStandings([]);
+
+    $("#resultsFooter").textContent =
+      `🔍 Pesquisa ativa: ${searchTerm}`;
+
     return;
+
+  } catch (error) {
+
+    $("#resultsList").innerHTML =
+      `<div class="error">${escapeHtml(error.message)}</div>`;
+
+    return;
+
   }
+
+}
+
+  if (!competitionId && !searchTerm) {
+  state.matches = [];
+  renderMatches();
+  renderStandings([]);
+  return;
+}
 
   $("#resultsList").innerHTML =
     '<div class="loading">A carregar jogos…</div>';
