@@ -1345,6 +1345,31 @@ window.openSearchResult = function(term) {
   `/team?name=${encodeURIComponent(term)}`;
 
 };
+document
+  .getElementById("goToResultsButton")
+  ?.addEventListener(
+    "click",
+    () => {
+
+      const term =
+        document
+          .getElementById("globalSearch")
+          ?.value
+          ?.trim();
+
+      if (!term) {
+
+        window.location.href =
+          "/results";
+
+        return;
+
+      }
+
+      openSearchResult(term);
+
+    }
+  );
 window.goToSearchResults = function() {
 
   const term =
