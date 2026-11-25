@@ -95,17 +95,7 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </div>
 `;
     
-
-  {
-    competition:
-      $("#resultCompetition").value,
-    searchTerm,
-    matches:
-      state.matches.length
-  }
-);
-
-if (
+  if (
   !$("#resultCompetition").value &&
   !searchTerm
 ) {
