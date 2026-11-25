@@ -49,14 +49,6 @@ const searchTerm =
   function renderMatches() {
     const region = $("#resultsList");
 
-  {
-    searchTerm,
-    competition:
-      $("#resultCompetition").value,
-    matches:
-      state.matches.length
-  }
-);
 const renderTable = (matches) => `
 <div class="table-wrap">
 <table>
