@@ -8,7 +8,6 @@ const searchTerm =
   new URLSearchParams(
     window.location.search
   ).get("search");
-
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
   async function api(url, options) {
@@ -48,7 +47,6 @@ const searchTerm =
 
   function renderMatches() {
     const region = $("#resultsList");
-
 const renderTable = (matches) => `
 <div class="table-wrap">
 <table>
@@ -94,14 +92,11 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </table>
 </div>
 `;
-    
-  if (
+    if (
   !$("#resultCompetition").value &&
   !searchTerm
 ) {
-  region.innerHTML =
-    '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
-
+  region.innerHTML = '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
   return;
 }
     if (!state.matches.length) {
@@ -110,7 +105,7 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
     }
 const now = new Date();
 
-const filteredMatches =	
+const filteredMatches =
   searchTerm
     ? state.matches.filter(match =>
         match.homeTeam
@@ -131,10 +126,10 @@ const playedMatches = filteredMatches
   .sort(
     (a, b) =>
       new Date(b.playedAt) - new Date(a.playedAt)
-  )
-  .slice(0, 10);
+  );
 
 const upcomingMatches = filteredMatches
+
   .filter(match =>
     match.playedAt &&
     new Date(match.playedAt) > now
@@ -142,9 +137,7 @@ const upcomingMatches = filteredMatches
   .sort(
     (a, b) =>
       new Date(a.playedAt) - new Date(b.playedAt)
-  )
-  .slice(0, 10);
-
+  );
 console.log("Matches:", state.matches);
 const matches = [...state.matches].sort(
   (a, b) =>
@@ -262,11 +255,15 @@ region.innerHTML = `
 function renderStandings(rows) {
   const region = $("#standingsList");
 
- if (!$("#resultCompetition").value) {
-      region.innerHTML = '<div class="empty">Selecione uma competição para consultar a classificação.</div>';
-      $("#standingsFooter").textContent = "";
-      return;
-    }
+ if (
+  !$("#resultCompetition").value &&
+  !searchTerm
+) {
+  region.innerHTML =
+    '<div class="empty"><div class="empty-icon">◷</div><h3>Selecione uma competição</h3><p>Escolha uma competição para consultar ou carregar jogos e resultados.</p></div>';
+
+  return;
+}
     if (!rows.length) {
       region.innerHTML = '<div class="empty">Ainda não há resultados suficientes para calcular uma classificação nesta competição.</div>';
       $("#standingsFooter").textContent = "Apenas competições em formato de campeonato apresentam classificação.";
@@ -342,46 +339,12 @@ function updateTeamsDatalist(matches) {
   const competitionId =
     $("#resultCompetition").value;
 
-if (searchTerm) {
-
-  $("#resultsList").innerHTML =
-    '<div class="loading">A pesquisar jogos...</div>';
-
-  try {
-
-    const matches =
-      await api(
-        `/api/results/search?q=${encodeURIComponent(searchTerm)}`
-      );
-
-    state.matches = matches;
-
-    updateTeamsDatalist(matches);
-
-   renderMatches();
-
-    $("#resultsFooter").textContent =
-      `🔍 Pesquisa ativa: ${searchTerm}`;
-
+  if (!competitionId) {
+    state.matches = [];
+    renderMatches();
+    renderStandings([]);
     return;
-
-  } catch (error) {
-
-    $("#resultsList").innerHTML =
-      `<div class="error">${escapeHtml(error.message)}</div>`;
-
-    return;
-
   }
-
-}
-
-  if (!competitionId && !searchTerm) {
-  state.matches = [];
-  renderMatches();
-  renderStandings([]);
-  return;
-}
 
   $("#resultsList").innerHTML =
     '<div class="loading">A carregar jogos…</div>';
@@ -693,20 +656,17 @@ if (
 
   loadCompetitions()
   .then(() => {
-
     if (searchTerm) {
       return loadMatches();
     }
 
     renderMatches();
-
   })
   .catch((error) => {
-
     $("#resultsList").innerHTML =
       `<div class="error">${escapeHtml(error.message)}</div>`;
-
   });
+
 loadConflicts();
 
 })();
