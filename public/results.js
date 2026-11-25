@@ -145,15 +145,6 @@ const upcomingMatches = filteredMatches
   )
   .slice(0, 10);
 
-console.log("Matches:", state.matches);
-const matches = [...state.matches].sort(
-  (a, b) =>
-    new Date(b.playedAt || 0) -
-    new Date(a.playedAt || 0)
-);
-
-console.log("Resultados:", playedMatches.length);
-console.log("Próximos:", upcomingMatches.length);
 region.innerHTML = `
 <section class="standings-group">
   <h3 class="standings-group-title">
