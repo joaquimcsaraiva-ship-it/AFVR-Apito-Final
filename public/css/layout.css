@@ -562,4 +562,77 @@ tbody tr:hover {
     align-items: flex-start;
     flex-direction: column;
   }
+
+/* ===== TEAM STANDINGS ===== */
+
+.team-standing-card {
+  margin-bottom: 12px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.team-standing-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.team-standing-head strong {
+  display: block;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.team-standing-head span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.team-position {
+  min-width: 58px;
+  padding: 9px 12px;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.team-standing-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.team-standing-stats > div {
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 9px;
+  text-align: center;
+}
+
+.team-standing-stats strong {
+  display: block;
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.team-standing-stats span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+@media (max-width: 680px) {
+  .team-standing-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

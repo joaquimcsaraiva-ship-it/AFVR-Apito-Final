@@ -109,6 +109,9 @@ updateFavoriteButton();
 const teamCompetitions =
   document.getElementById("teamCompetitions");
 
+const teamStandings =
+  document.getElementById("teamStandings");
+
   const upcomingMatches =
     document.getElementById("upcomingMatches");
 
@@ -162,6 +165,140 @@ const teamCompetitionList =
   competitions.filter(competition =>
     competitionIds.has(Number(competition.id))
   );
+
+const standingsByCompetition =
+  await Promise.all(
+    teamCompetitionList.map(async competition => {
+      try {
+        const response =
+          await fetch(
+            `/api/standings/${encodeURIComponent(competition.id)}`
+          );
+
+        if (!response.ok) {
+          return {
+            competition,
+            rows: []
+          };
+        }
+
+        const rows =
+          await response.json();
+
+        return {
+          competition,
+          rows
+        };
+
+      } catch {
+        return {
+          competition,
+          rows: []
+        };
+      }
+    })
+  );
+
+const searchedTeam =
+  teamName.toLocaleLowerCase("pt-PT");
+
+const teamStandingRows =
+  standingsByCompetition.flatMap(
+    ({ competition, rows }) => {
+
+      return rows
+        .map((standing, index) => ({
+          ...standing,
+          position: index + 1,
+          competition
+        }))
+        .filter(standing =>
+          standing.teamName
+            .toLocaleLowerCase("pt-PT")
+            .includes(searchedTeam)
+        );
+
+    }
+  );
+
+teamStandings.innerHTML =
+  teamStandingRows.length
+    ? teamStandingRows.map(standing => `
+        <article class="team-standing-card">
+
+          <div class="team-standing-head">
+
+            <div>
+              <strong>
+                ${standing.teamName}
+              </strong>
+
+              <span>
+                ${standing.competition.name}
+              </span>
+
+              ${
+                standing.groupName
+                  ? `
+                      <span>
+                        ${standing.groupName}
+                      </span>
+                    `
+                  : ""
+              }
+            </div>
+
+            <div class="team-position">
+              ${standing.position}.º
+            </div>
+
+          </div>
+
+          <div class="team-standing-stats">
+
+            <div>
+              <strong>${standing.points}</strong>
+              <span>Pontos</span>
+            </div>
+
+            <div>
+              <strong>${standing.played}</strong>
+              <span>Jogos</span>
+            </div>
+
+            <div>
+              <strong>${standing.wins}</strong>
+              <span>Vitórias</span>
+            </div>
+
+            <div>
+              <strong>${standing.draws}</strong>
+              <span>Empates</span>
+            </div>
+
+            <div>
+              <strong>${standing.losses}</strong>
+              <span>Derrotas</span>
+            </div>
+
+            <div>
+              <strong>
+                ${standing.goalsFor}-${standing.goalsAgainst}
+              </strong>
+              <span>Golos</span>
+            </div>
+
+          </div>
+
+        </article>
+      `).join("")
+    : `
+        <p class="team-empty">
+          Não existe classificação disponível
+          para esta equipa.
+        </p>
+      `;
+
 
 teamCompetitions.innerHTML =
   teamCompetitionList.length
