@@ -735,6 +735,7 @@ table {
   id="goToResultsButton"
   type="button"
   class="button button-primary"
+  onclick="window.handleGlobalSearch()"
 >
   Ver Resultados
 </button>
@@ -1269,7 +1270,7 @@ $("#heroCompetitions").textContent =
       $("#cancelModal").addEventListener("click", closeModal);
       $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === $("#modalBackdrop")) closeModal(); });
       document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modalBackdrop").hidden) closeModal(); });
-async function handleGlobalSearch() {
+window.handleGlobalSearch = async function() {
 
   const term =
     $("#globalSearch")?.value?.trim();
