@@ -335,12 +335,7 @@ function updateTeamsDatalist(matches) {
 
   if (searchTerm) {
 
-    console.log(
-      "SEARCH BRANCH",
-      searchTerm
-    );
-
-    $("#resultsList").innerHTML =
+     $("#resultsList").innerHTML =
       '<div class="loading">A pesquisar jogos...</div>';
 
     try {
@@ -350,17 +345,7 @@ function updateTeamsDatalist(matches) {
           `/api/results/search?q=${encodeURIComponent(searchTerm)}`
         );
 
-      console.log(
-        "SEARCH RESULTS",
-        matches.length
-      );
-
       state.matches = matches;
-
-      console.log(
-        "STATE",
-        state.matches.length
-      );
 
       updateTeamsDatalist(matches);
 
@@ -406,15 +391,6 @@ function updateTeamsDatalist(matches) {
     state.matches = matches;
 state.matches = matches;
 
-console.log(
-  "SEARCH MATCHES:",
-  matches.length
-);
-
-console.log(
-  "STATE MATCHES:",
-  state.matches.length
-);
 
 updateTeamsDatalist(matches);
 
