@@ -358,13 +358,7 @@ if (searchTerm) {
 
     updateTeamsDatalist(matches);
 
-  matches.length
-);
-
-
-  state.matches.length
-);
-    renderMatches();
+   renderMatches();
 
     $("#resultsFooter").textContent =
       `🔍 Pesquisa ativa: ${searchTerm}`;
