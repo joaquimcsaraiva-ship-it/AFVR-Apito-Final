@@ -123,24 +123,6 @@ const filteredMatches =
       )
     : state.matches;
 
-/const filterBanner = searchTerm
-  ? `
-      <div class="active-filter">
-        <span>
-          🔍 Pesquisa ativa:
-          <strong>${escapeHtml(searchTerm)}</strong>
-        </span>
-
-        <a
-          href="/results"
-          class="clear-filter"
-        >
-          Limpar pesquisa
-        </a>
-      </div>
-    `
-  : "";/
-
 const playedMatches = filteredMatches
   .filter(match =>
     match.playedAt &&
