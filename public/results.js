@@ -9,8 +9,6 @@ const searchTerm =
     window.location.search
   ).get("search");
 
-  searchTerm
-);
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
   async function api(url, options) {
@@ -143,7 +141,7 @@ const filteredMatches =
       )
     : state.matches;
 
-const filterBanner = searchTerm
+/const filterBanner = searchTerm
   ? `
       <div class="active-filter">
         <span>
@@ -159,7 +157,7 @@ const filterBanner = searchTerm
         </a>
       </div>
     `
-  : "";
+  : "";/
 
 const playedMatches = filteredMatches
   .filter(match =>
@@ -193,7 +191,6 @@ const matches = [...state.matches].sort(
 console.log("Resultados:", playedMatches.length);
 console.log("Próximos:", upcomingMatches.length);
 region.innerHTML = `
-${filterBanner}
 <section class="standings-group">
   <h3 class="standings-group-title">
     Últimos Resultados
