@@ -4,6 +4,95 @@
 
   const teamName =
     params.get("name")?.trim();
+const favoriteButton =
+  document.getElementById("favoriteTeamButton");
+
+const favoritesStorageKey =
+  "afvrFavoriteTeams";
+
+function getFavoriteTeams() {
+  try {
+    const saved =
+      localStorage.getItem(favoritesStorageKey);
+
+    const favorites =
+      saved ? JSON.parse(saved) : [];
+
+    return Array.isArray(favorites)
+      ? favorites
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function isFavoriteTeam(name) {
+  return getFavoriteTeams().some(
+    favorite =>
+      favorite.toLocaleLowerCase("pt-PT") ===
+      name.toLocaleLowerCase("pt-PT")
+  );
+}
+
+function updateFavoriteButton() {
+  if (!favoriteButton || !teamName) {
+    return;
+  }
+
+  const isFavorite =
+    isFavoriteTeam(teamName);
+
+  favoriteButton.textContent =
+    isFavorite
+      ? "★ Nos favoritos"
+      : "☆ Adicionar aos favoritos";
+
+  favoriteButton.setAttribute(
+    "aria-pressed",
+    String(isFavorite)
+  );
+
+  favoriteButton.classList.toggle(
+    "is-favorite",
+    isFavorite
+  );
+}
+
+function toggleFavoriteTeam() {
+  if (!teamName) {
+    return;
+  }
+
+  const favorites =
+    getFavoriteTeams();
+
+  const existingIndex =
+    favorites.findIndex(
+      favorite =>
+        favorite.toLocaleLowerCase("pt-PT") ===
+        teamName.toLocaleLowerCase("pt-PT")
+    );
+
+  if (existingIndex >= 0) {
+    favorites.splice(existingIndex, 1);
+  } else {
+    favorites.push(teamName);
+  }
+
+  localStorage.setItem(
+    favoritesStorageKey,
+    JSON.stringify(favorites)
+  );
+
+  updateFavoriteButton();
+}
+
+favoriteButton?.addEventListener(
+  "click",
+  toggleFavoriteTeam
+);
+
+updateFavoriteButton();
 
   const teamNameElement =
     document.getElementById("teamName");
