@@ -106,6 +106,9 @@ updateFavoriteButton();
   const recentResults =
     document.getElementById("recentResults");
 
+const teamCompetitions =
+  document.getElementById("teamCompetitions");
+
   const upcomingMatches =
     document.getElementById("upcomingMatches");
 
@@ -135,6 +138,58 @@ updateFavoriteButton();
     }
 
     const matches = await response.json();
+
+const competitionsResponse =
+  await fetch("/api/competitions");
+
+if (!competitionsResponse.ok) {
+  throw new Error(
+    "Não foi possível carregar as competições."
+  );
+}
+
+const competitions =
+  await competitionsResponse.json();
+
+const competitionIds =
+  new Set(
+    matches
+      .map(match => Number(match.competitionId))
+      .filter(Number.isInteger)
+  );
+
+const teamCompetitionList =
+  competitions.filter(competition =>
+    competitionIds.has(Number(competition.id))
+  );
+
+teamCompetitions.innerHTML =
+  teamCompetitionList.length
+    ? teamCompetitionList.map(competition => `
+        <article class="team-competition">
+          <div>
+            <strong>
+              ${competition.name}
+            </strong>
+
+            <span>
+              ${competition.season || ""}
+            </span>
+          </div>
+
+          <a
+            href="/results?competitionId=${encodeURIComponent(competition.id)}"
+            class="team-competition-link"
+          >
+            Ver competição →
+          </a>
+        </article>
+      `).join("")
+    : `
+        <p class="team-empty">
+          Não foram identificadas competições.
+        </p>
+      `;
 
     teamSummary.textContent =
       `${matches.length} jogos encontrados`;

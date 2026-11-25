@@ -520,4 +520,46 @@ tbody tr:hover {
   .team-favorite-button {
     width: 100%;
   }
+
+.team-competition {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.team-competition strong {
+  display: block;
+  color: #0f172a;
+}
+
+.team-competition span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.team-competition-link {
+  flex-shrink: 0;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.team-competition-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .team-competition {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
