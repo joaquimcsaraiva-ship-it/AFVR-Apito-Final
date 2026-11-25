@@ -299,7 +299,6 @@ teamStandings.innerHTML =
         </p>
       `;
 
-
 teamCompetitions.innerHTML =
   teamCompetitionList.length
     ? teamCompetitionList.map(competition => `
