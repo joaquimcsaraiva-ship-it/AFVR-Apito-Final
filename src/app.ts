@@ -33,6 +33,16 @@ app.get(["/dashboard", "/competitions", "/results"], (_req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
+app.get("/team", (_req, res) => {
+  res.sendFile(
+    path.join(
+      process.cwd(),
+      "public",
+      "team.html"
+    )
+  );
+});
+
 app.get("/test-search", (_req, res) => {
   res.json({
     ok: true,
