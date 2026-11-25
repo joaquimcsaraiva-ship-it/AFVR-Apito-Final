@@ -206,18 +206,35 @@ const teamStandingRows =
   standingsByCompetition.flatMap(
     ({ competition, rows }) => {
 
-      return rows
-        .map((standing, index) => ({
-          ...standing,
-          position: index + 1,
-          competition
-        }))
-        .filter(standing =>
-          standing.teamName
-            .toLocaleLowerCase("pt-PT")
-            .includes(searchedTeam)
-        );
+      const groups = new Map();
 
+      rows.forEach(standing => {
+        const groupKey =
+          standing.groupName || "__NO_GROUP__";
+
+        if (!groups.has(groupKey)) {
+          groups.set(groupKey, []);
+        }
+
+        groups
+          .get(groupKey)
+          .push(standing);
+      });
+
+      return [...groups.values()]
+        .flatMap(groupRows =>
+          groupRows
+            .map((standing, index) => ({
+              ...standing,
+              position: index + 1,
+              competition
+            }))
+            .filter(standing =>
+              standing.teamName
+                .toLocaleLowerCase("pt-PT")
+                .includes(searchedTeam)
+            )
+        );
     }
   );
 

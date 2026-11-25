@@ -123,7 +123,7 @@ export async function searchMatches(
       home_team ILIKE $1
       OR away_team ILIKE $1
     ORDER BY played_at DESC
-    LIMIT 50
+    LIMIT 500
     `,
     [`%${query}%`]
   );
