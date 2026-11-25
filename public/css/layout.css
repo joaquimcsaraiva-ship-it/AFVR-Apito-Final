@@ -635,4 +635,17 @@ tbody tr:hover {
   .team-standing-stats {
     grid-template-columns: repeat(3, 1fr);
   }
+
+@media (max-width: 480px) {
+  #teamStats {
+    grid-template-columns: 1fr;
+  }
+
+  .team-stat {
+    padding: 14px 16px;
+  }
+
+  .team-stat strong {
+    font-size: 22px;
+  }
 }
