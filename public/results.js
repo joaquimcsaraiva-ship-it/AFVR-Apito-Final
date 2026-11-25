@@ -8,8 +8,7 @@ const searchTerm =
   new URLSearchParams(
     window.location.search
   ).get("search");
-console.log(
-  "SEARCH TERM:",
+
   searchTerm
 );
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
@@ -51,8 +50,7 @@ console.log(
 
   function renderMatches() {
     const region = $("#resultsList");
-console.log(
-  "RENDER CALL",
+
   {
     searchTerm,
     competition:
@@ -107,8 +105,7 @@ ${match.source === "fpf" ? "● FPF" : "○ Manual"}
 </div>
 `;
     
-console.log(
-  "RENDER:",
+
   {
     competition:
       $("#resultCompetition").value,
@@ -133,7 +130,7 @@ if (
     }
 const now = new Date();
 
-const filteredMatches =
+const filteredMatches =	
   searchTerm
     ? state.matches.filter(match =>
         match.homeTeam
@@ -146,6 +143,24 @@ const filteredMatches =
       )
     : state.matches;
 
+const filterBanner = searchTerm
+  ? `
+      <div class="active-filter">
+        <span>
+          🔍 Pesquisa ativa:
+          <strong>${escapeHtml(searchTerm)}</strong>
+        </span>
+
+        <a
+          href="/results"
+          class="clear-filter"
+        >
+          Limpar pesquisa
+        </a>
+      </div>
+    `
+  : "";
+
 const playedMatches = filteredMatches
   .filter(match =>
     match.playedAt &&
@@ -154,10 +169,10 @@ const playedMatches = filteredMatches
   .sort(
     (a, b) =>
       new Date(b.playedAt) - new Date(a.playedAt)
-  );
+  )
+  .slice(0, 10);
 
 const upcomingMatches = filteredMatches
-
   .filter(match =>
     match.playedAt &&
     new Date(match.playedAt) > now
@@ -165,7 +180,9 @@ const upcomingMatches = filteredMatches
   .sort(
     (a, b) =>
       new Date(a.playedAt) - new Date(b.playedAt)
-  );
+  )
+  .slice(0, 10);
+
 console.log("Matches:", state.matches);
 const matches = [...state.matches].sort(
   (a, b) =>
@@ -176,6 +193,7 @@ const matches = [...state.matches].sort(
 console.log("Resultados:", playedMatches.length);
 console.log("Próximos:", upcomingMatches.length);
 region.innerHTML = `
+${filterBanner}
 <section class="standings-group">
   <h3 class="standings-group-title">
     Últimos Resultados
@@ -378,13 +396,11 @@ if (searchTerm) {
     state.matches = matches;
 
     updateTeamsDatalist(matches);
-console.log(
-  "SEARCH MATCHES:",
+
   matches.length
 );
 
-console.log(
-  "STATE MATCHES:",
+
   state.matches.length
 );
     renderMatches();
