@@ -342,28 +342,43 @@ function updateTeamsDatalist(matches) {
   const competitionId =
     $("#resultCompetition").value;
 
-if (searchTerm) {
+  if (searchTerm) {
 
-  $("#resultsList").innerHTML =
-    '<div class="loading">A pesquisar jogos...</div>';
+    console.log(
+      "SEARCH BRANCH",
+      searchTerm
+    );
 
-  try {
+    $("#resultsList").innerHTML =
+      '<div class="loading">A pesquisar jogos...</div>';
 
-    const matches =
-      await api(
-        `/api/results/search?q=${encodeURIComponent(searchTerm)}`
+    try {
+
+      const matches =
+        await api(
+          `/api/results/search?q=${encodeURIComponent(searchTerm)}`
+        );
+
+      console.log(
+        "SEARCH RESULTS",
+        matches.length
       );
 
-    state.matches = matches;
+      state.matches = matches;
 
-    updateTeamsDatalist(matches);
+      console.log(
+        "STATE",
+        state.matches.length
+      );
 
-   renderMatches();
+      updateTeamsDatalist(matches);
 
-    $("#resultsFooter").textContent =
-      `🔍 Pesquisa ativa: ${searchTerm}`;
+      renderMatches();
 
-    return;
+      $("#resultsFooter").textContent =
+        `🔍 Pesquisa ativa: ${searchTerm}`;
+
+      return;
 
   } catch (error) {
 
@@ -413,6 +428,7 @@ console.log(
 updateTeamsDatalist(matches);
 
 renderMatches();
+
 updateTeamsDatalist(matches);
 
     renderMatches();
