@@ -729,7 +729,16 @@ const scheduledFpfMatch = await client.query<{
       AND away_score IS NULL
       AND LOWER(home_team) = LOWER($2)
       AND LOWER(away_team) = LOWER($3)
-      AND played_at = $4
+      AND DATE(played_at) = DATE($4::timestamptz)
+    ORDER BY
+      ABS(
+        EXTRACT(
+          EPOCH FROM (
+            played_at - $4::timestamptz
+          )
+        )
+      ),
+      id DESC
     LIMIT 1
     FOR UPDATE
   `,
@@ -740,6 +749,7 @@ const scheduledFpfMatch = await client.query<{
     match.playedAt
   ]
 );
+
 if (scheduledFpfMatch.rowCount && scheduledFpfMatch.rows[0]) {
 
   const existingExternalId = await client.query(
@@ -772,7 +782,7 @@ if (scheduledFpfMatch.rowCount) {
     "EXISTING_FPF_MATCH",
     {
       externalId,
-      matchId: existingByExternalId.rows[0].id,
+      matchId: scheduledFpfMatch.rows[0].id,
       homeTeam: match.homeTeam,
       awayTeam: match.awayTeam,
       playedAt: match.playedAt
@@ -802,6 +812,16 @@ if (scheduledFpfMatch.rowCount) {
       match.status,
       scheduledFpfMatch.rows[0].id
     ]
+  );
+
+  await saveMatchSource(
+    client,
+    scheduledFpfMatch.rows[0].id,
+    source,
+    sourcePriority,
+    null,
+    match.homeScore,
+    match.awayScore
   );
 
   continue;
