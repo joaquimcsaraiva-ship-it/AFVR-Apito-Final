@@ -661,14 +661,59 @@ tbody tr:hover {
 
 .team-competition-link {
   flex-shrink: 0;
-  color: #2563eb;
+  padding: 8px 12px;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 8px;
   text-decoration: none;
   font-size: 13px;
   font-weight: 700;
 }
 
+.team-competition-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.team-competition-type {
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 4px 9px;
+  color: #1e3a8a;
+  background: #dbeafe;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.team-competition-content > strong {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.team-competition-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.team-competition-meta span {
+  display: inline-block;
+  margin-top: 0;
+  padding: 3px 7px;
+  color: #475569;
+  background: #f1f5f9;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
 .team-competition-link:hover {
-  text-decoration: underline;
+  background: #1d4ed8;
 }
 
 @media (max-width: 680px) {
@@ -676,6 +721,12 @@ tbody tr:hover {
     align-items: flex-start;
     flex-direction: column;
   }
+
+.team-competition-link {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
 
 /* ===== TEAM STANDINGS ===== */
 

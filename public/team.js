@@ -576,28 +576,93 @@ teamStandings.innerHTML =
         </p>
       `;
 
+const getCompetitionGroup = competition => {
+  const standing =
+    teamStandingRows.find(row =>
+      Number(row.competition.id) ===
+      Number(competition.id)
+    );
+
+  return standing?.groupName || "";
+};
+
+const getCompetitionType = competition => {
+  const name =
+    String(competition.name || "")
+      .toLocaleLowerCase("pt-PT");
+
+  if (name.includes("taça")) {
+    return "Taça";
+  }
+
+  if (
+    name.includes("campeonato") ||
+    name.includes("divisão") ||
+    name.includes("liga")
+  ) {
+    return "Campeonato";
+  }
+
+  return "Competição";
+};
+
 teamCompetitions.innerHTML =
   filteredTeamCompetitionList.length
-    ? filteredTeamCompetitionList.map(competition => `
-        <article class="team-competition">
-          <div>
-            <strong>
-              ${competition.name}
-            </strong>
+    ? filteredTeamCompetitionList
+        .map(competition => {
+          const competitionType =
+            getCompetitionType(competition);
 
-            <span>
-              ${competition.season || ""}
-            </span>
-          </div>
+          const ageGroup =
+            getAgeGroup(competition);
 
-          <a
-            href="/results?competitionId=${encodeURIComponent(competition.id)}"
-            class="team-competition-link"
-          >
-            Ver competição →
-          </a>
-        </article>
-      `).join("")
+          const sport =
+            competition.sport === "futsal"
+              ? "Futsal"
+              : "Futebol";
+
+          const groupName =
+            getCompetitionGroup(competition);
+
+          const details = [
+            ageGroup !== "Outro"
+              ? ageGroup
+              : "",
+            sport,
+            groupName,
+            competition.season || ""
+          ].filter(Boolean);
+
+          return `
+            <article class="team-competition">
+              <div class="team-competition-content">
+                <span class="team-competition-type">
+                  ${competitionType}
+                </span>
+
+                <strong>
+                  ${competition.name}
+                </strong>
+
+                <div class="team-competition-meta">
+                  ${details
+                    .map(detail => `
+                      <span>${detail}</span>
+                    `)
+                    .join("")}
+                </div>
+              </div>
+
+              <a
+                href="/results?competitionId=${encodeURIComponent(competition.id)}"
+                class="team-competition-link"
+              >
+                Ver competição →
+              </a>
+            </article>
+          `;
+        })
+        .join("")
     : `
         <p class="team-empty">
           Não foram identificadas competições.
