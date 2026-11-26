@@ -153,6 +153,85 @@ if (!competitionsResponse.ok) {
 
 const competitions =
   await competitionsResponse.json();
+function getAgeGroup(competition) {
+  const name =
+    String(competition?.name || "")
+      .toLocaleLowerCase("pt-PT");
+
+  if (name.includes("petiz")) {
+    return "Petizes";
+  }
+
+  if (name.includes("traquina")) {
+    return "Traquinas";
+  }
+
+  if (
+    name.includes("sub - 10") ||
+    name.includes("sub- 10") ||
+    name.includes("sub-10")
+  ) {
+    return "Sub-10";
+  }
+
+  if (
+    name.includes("sub - 11") ||
+    name.includes("sub- 11") ||
+    name.includes("sub-11")
+  ) {
+    return "Sub-11";
+  }
+
+  if (
+    name.includes("sub - 12") ||
+    name.includes("sub- 12") ||
+    name.includes("sub-12")
+  ) {
+    return "Sub-12";
+  }
+
+  if (
+    name.includes("sub - 13") ||
+    name.includes("sub- 13") ||
+    name.includes("sub-13") ||
+    name.includes('sub "13"')
+  ) {
+    return "Sub-13";
+  }
+
+  if (
+    name.includes("sub - 14") ||
+    name.includes("sub- 14") ||
+    name.includes("sub-14")
+  ) {
+    return "Sub-14";
+  }
+
+  if (
+    name.includes('juniores "a"') ||
+    name.includes("juniores a")
+  ) {
+    return "Juniores A";
+  }
+
+  if (
+    name.includes('juniores "b"') ||
+    name.includes("juniores b")
+  ) {
+    return "Juniores B";
+  }
+
+  if (
+    name.includes("sénior") ||
+    name.includes("senior") ||
+    name.includes("divisão de honra") ||
+    name.includes("divisao de honra")
+  ) {
+    return "Seniores";
+  }
+
+  return "Outro";
+}
 
 const competitionIds =
   new Set(
@@ -166,9 +245,115 @@ const teamCompetitionList =
     competitionIds.has(Number(competition.id))
   );
 
+const availableAgeGroups = [
+  ...new Set(
+    teamCompetitionList
+      .map(competition => getAgeGroup(competition))
+      .filter(ageGroup => ageGroup !== "Outro")
+  )
+];
+
+const ageGroupOrder = [
+  "Seniores",
+  "Juniores A",
+  "Juniores B",
+  "Sub-14",
+  "Sub-13",
+  "Sub-12",
+  "Sub-11",
+  "Sub-10",
+  "Traquinas",
+  "Petizes"
+];
+
+availableAgeGroups.sort(
+  (a, b) =>
+    ageGroupOrder.indexOf(a) -
+    ageGroupOrder.indexOf(b)
+);
+
+const selectedAgeGroup =
+  new URLSearchParams(window.location.search)
+    .get("ageGroup") || "";
+
+const filteredTeamCompetitionList =
+  selectedAgeGroup
+    ? teamCompetitionList.filter(
+        competition =>
+          getAgeGroup(competition) === selectedAgeGroup
+      )
+    : teamCompetitionList;
+
+const ageGroupFilter =
+  document.createElement("div");
+
+ageGroupFilter.className =
+  "team-age-group-filter";
+
+ageGroupFilter.innerHTML = `
+  <label for="teamAgeGroup">
+    Escalão
+  </label>
+
+  <select id="teamAgeGroup">
+    <option value="">
+      Todos os escalões
+    </option>
+
+    ${availableAgeGroups
+  .map(ageGroup => `
+    <option
+      value="${ageGroup}"
+      ${ageGroup === selectedAgeGroup ? "selected" : ""}
+    >
+      ${ageGroup}
+    </option>
+  `)
+  .join("")}
+  </select>
+`;
+
+teamSummary.insertAdjacentElement(
+  "afterend",
+  ageGroupFilter
+);
+
+const teamAgeGroup =
+  document.getElementById("teamAgeGroup");
+
+teamAgeGroup?.addEventListener(
+  "change",
+  event => {
+    const url =
+      new URL(window.location.href);
+
+    const ageGroup =
+      event.target.value;
+
+    if (ageGroup) {
+  url.searchParams.set(
+    "ageGroup",
+    ageGroup
+  );
+}
+else {
+      url.searchParams.delete(
+        "ageGroup"
+      );
+    }
+
+    window.location.href =
+      url.toString();
+  }
+);
+console.log(
+  "Escalões disponíveis:",
+  availableAgeGroups
+);
+
 const standingsByCompetition =
   await Promise.all(
-    teamCompetitionList.map(async competition => {
+    filteredTeamCompetitionList.map(async competition => {
       try {
         const response =
           await fetch(
@@ -317,8 +502,8 @@ teamStandings.innerHTML =
       `;
 
 teamCompetitions.innerHTML =
-  teamCompetitionList.length
-    ? teamCompetitionList.map(competition => `
+  filteredTeamCompetitionList.length
+    ? filteredTeamCompetitionList.map(competition => `
         <article class="team-competition">
           <div>
             <strong>
@@ -344,12 +529,27 @@ teamCompetitions.innerHTML =
         </p>
       `;
 
-    teamSummary.textContent =
-      `${matches.length} jogos encontrados`;
+    const selectedCompetitionIds =
+  new Set(
+    filteredTeamCompetitionList
+      .map(competition => Number(competition.id))
+  );
+const filteredMatches =
+  selectedAgeGroup
+    ? matches.filter(match =>
+        selectedCompetitionIds.has(
+          Number(match.competitionId)
+        )
+      )
+    : matches;
 
-    const now = new Date();
+teamSummary.textContent =
+  `${filteredMatches.length} jogos encontrados`;
 
-    const playedMatches = matches
+const now = new Date();
+
+const playedMatches = filteredMatches
+
       .filter(match =>
         match.playedAt &&
         new Date(match.playedAt) <= now &&
@@ -362,7 +562,7 @@ teamCompetitions.innerHTML =
           new Date(a.playedAt)
       );
 
-    const upcoming = matches
+    const upcoming = filteredMatches
       .filter(match =>
         match.playedAt &&
         new Date(match.playedAt) > now
