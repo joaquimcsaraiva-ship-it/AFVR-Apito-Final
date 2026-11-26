@@ -724,35 +724,89 @@ const playedMatches = filteredMatches
       </div>
     `;
 
-    recentResults.innerHTML =
-      lastFive.length
-        ? lastFive.map(match => `
-            <article class="team-match">
-              <div>
-                <strong>${match.homeTeam}</strong>
-              </div>
+const getMatchOutcome = match => {
+  const searchedTeam =
+    teamName.toLocaleLowerCase("pt-PT");
 
-              <div class="team-score">
-                ${match.homeScore}
-                -
-                ${match.awayScore}
-              </div>
+  const isHome =
+    match.homeTeam
+      .toLocaleLowerCase("pt-PT")
+      .includes(searchedTeam);
 
-              <div>
-                <strong>${match.awayTeam}</strong>
-              </div>
+  const teamGoals =
+    isHome
+      ? match.homeScore
+      : match.awayScore;
 
-              <small>
+  const opponentGoals =
+    isHome
+      ? match.awayScore
+      : match.homeScore;
+
+  if (teamGoals > opponentGoals) {
+    return {
+      label: "Vitória",
+      className: "is-win"
+    };
+  }
+
+  if (teamGoals === opponentGoals) {
+    return {
+      label: "Empate",
+      className: "is-draw"
+    };
+  }
+
+    return {
+    label: "Derrota",
+    className: "is-loss"
+  };
+};
+
+recentResults.innerHTML =
+  lastFive.length
+    ? lastFive.map(match => {
+        const outcome =
+          getMatchOutcome(match);
+
+        return `
+          <article
+            class="team-match ${outcome.className}"
+          >
+            <div>
+              <strong>${match.homeTeam}</strong>
+            </div>
+
+            <div class="team-score">
+              ${match.homeScore}
+              -
+              ${match.awayScore}
+            </div>
+
+            <div>
+              <strong>${match.awayTeam}</strong>
+            </div>
+
+            <small>
+              <span
+                class="team-match-outcome ${outcome.className}"
+              >
+                ${outcome.label}
+              </span>
+
+              <span>
                 ${new Date(match.playedAt)
                   .toLocaleDateString("pt-PT")}
-              </small>
-            </article>
-          `).join("")
-        : `
-            <p class="team-empty">
-              Sem resultados recentes.
-            </p>
-          `;
+              </span>
+            </small>
+          </article>
+        `;
+      }).join("")
+    : `
+        <p class="team-empty">
+          Sem resultados recentes.
+        </p>
+      `;
 
     upcomingMatches.innerHTML =
       nextFive.length
