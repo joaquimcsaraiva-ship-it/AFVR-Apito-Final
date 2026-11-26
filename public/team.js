@@ -100,6 +100,9 @@ updateFavoriteButton();
   const teamSummary =
     document.getElementById("teamSummary");
 
+const teamContext =
+  document.getElementById("teamContext");
+
   const teamStats =
     document.getElementById("teamStats");
 
@@ -284,6 +287,46 @@ const filteredTeamCompetitionList =
       )
     : teamCompetitionList;
 
+const contextSports = [
+  ...new Set(
+    filteredTeamCompetitionList
+      .map(competition =>
+        competition.sport === "futsal"
+          ? "Futsal"
+          : "Futebol"
+      )
+  )
+];
+
+const contextAgeGroup =
+  selectedAgeGroup || "Todos os escalões";
+
+const contextCompetitionCount =
+  filteredTeamCompetitionList.length;
+
+teamContext.innerHTML = `
+  <div class="team-context-item">
+    <strong>${contextAgeGroup}</strong>
+    <span>Escalão</span>
+  </div>
+
+  <div class="team-context-item">
+    <strong>
+      ${contextSports.join(" · ") || "—"}
+    </strong>
+    <span>Modalidade</span>
+  </div>
+
+  <div class="team-context-item">
+    <strong>${contextCompetitionCount}</strong>
+    <span>
+      ${contextCompetitionCount === 1
+        ? "Competição"
+        : "Competições"}
+    </span>
+  </div>
+`;
+
 const ageGroupFilter =
   document.createElement("div");
 
@@ -383,6 +426,38 @@ const standingsByCompetition =
       }
     })
   );
+
+const teamGroups = [
+  ...new Set(
+    standingsByCompetition
+      .flatMap(({ rows }) =>
+        rows
+          .filter(standing =>
+            standing.teamName
+              ?.toLocaleLowerCase("pt-PT")
+              .includes(
+                teamName.toLocaleLowerCase("pt-PT")
+              )
+          )
+          .map(standing =>
+            String(standing.groupName || "").trim()
+          )
+          .filter(Boolean)
+      )
+  )
+];
+
+if (teamGroups.length) {
+  teamContext.insertAdjacentHTML(
+    "beforeend",
+    `
+      <div class="team-context-item">
+        <strong>${teamGroups.join(" · ")}</strong>
+        <span>Série</span>
+      </div>
+    `
+  );
+}
 
 const searchedTeam =
   teamName.toLocaleLowerCase("pt-PT");

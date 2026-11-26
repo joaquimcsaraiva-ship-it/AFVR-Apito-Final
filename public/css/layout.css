@@ -389,6 +389,33 @@ tbody tr:hover {
   opacity: 0.8;
 }
 
+.team-context {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.team-context-item {
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.team-context-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.team-context-item span {
+  color: #64748b;
+  font-size: 13px;
+}
+
 #teamStats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -513,6 +540,14 @@ tbody tr:hover {
 }
 
 @media (max-width: 680px) {
+  .team-context {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .team-context-item {
+    padding: 14px 16px;
+  }
+
   .team-header-content {
     flex-direction: column;
   }
