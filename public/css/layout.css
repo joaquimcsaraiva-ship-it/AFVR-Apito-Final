@@ -169,8 +169,10 @@ body {
 
 /* ===== TABLES ===== */
 
-.table-wrapper {
+.table-wrapper,
+.table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -357,6 +359,32 @@ tbody tr:hover {
   th,
   td {
     padding: .65rem;
+  }
+
+  #standingsList table {
+    min-width: 100%;
+    font-size: 12px;
+  }
+
+  #standingsList th,
+  #standingsList td {
+    padding: 8px 5px;
+    white-space: nowrap;
+  }
+
+  #standingsList th:nth-child(2),
+  #standingsList td:nth-child(2) {
+    min-width: 120px;
+    white-space: normal;
+  }
+
+  #standingsList th:nth-child(7),
+  #standingsList td:nth-child(7),
+  #standingsList th:nth-child(8),
+  #standingsList td:nth-child(8),
+  #standingsList th:nth-child(9),
+  #standingsList td:nth-child(9) {
+    display: none;
   }
 
   .stat-value {
