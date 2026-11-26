@@ -31,6 +31,47 @@ export async function saveMatchSource(
   awayScore: number | null
 ): Promise<void> {
 
+  const existing = await queryable.query(
+    `
+      SELECT id
+      FROM match_sources
+      WHERE match_id = $1
+        AND source = $2
+      ORDER BY collected_at DESC, id DESC
+      LIMIT 1
+    `,
+    [
+      matchId,
+      source
+    ]
+  ) as {
+    rows: Array<{ id: number }>;
+  };
+
+  if (existing.rows.length) {
+    await queryable.query(
+      `
+        UPDATE match_sources
+        SET
+          source_priority = $2,
+          source_url = $3,
+          home_score = $4,
+          away_score = $5,
+          collected_at = NOW()
+        WHERE id = $1
+      `,
+      [
+        existing.rows[0].id,
+        sourcePriority,
+        sourceUrl,
+        homeScore,
+        awayScore
+      ]
+    );
+
+    return;
+  }
+
   await queryable.query(
     `
       INSERT INTO match_sources (
@@ -44,13 +85,13 @@ export async function saveMatchSource(
       VALUES ($1, $2, $3, $4, $5, $6)
     `,
     [
-  matchId,
-  source,
-  sourcePriority,
-  sourceUrl,
-  homeScore,
-  awayScore
-]
+      matchId,
+      source,
+      sourcePriority,
+      sourceUrl,
+      homeScore,
+      awayScore
+    ]
   );
 }
 

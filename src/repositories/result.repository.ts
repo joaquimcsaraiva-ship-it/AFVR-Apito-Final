@@ -427,60 +427,135 @@ async function syncExternalResults(
     }
 
     const manualCandidates = await client.query<{
-      id: number;
-      home_team: string;
-      away_team: string;
-      played_at: Date;
-    }>(
-      `SELECT id, home_team, away_team, played_at FROM matches
-       WHERE competition_id = $1 AND source = 'manual' AND status = 'scheduled'
-         AND home_score IS NULL AND away_score IS NULL AND played_at IS NOT NULL
-       FOR UPDATE`,
-      [localCompetitionId]
-    );
-    const placeholderCandidates = await client.query<{ id: number }>(
-      `SELECT id FROM matches
-       WHERE competition_id = $1 AND source = 'fpf' AND status = 'scheduled'
-         AND home_score IS NULL AND away_score IS NULL
-         AND home_team = '1º ENCONTRO -' AND away_team = 'Jogos'
-       ORDER BY id FOR UPDATE`,
-      [localCompetitionId]
+  id: number;
+  home_team: string;
+  away_team: string;
+  played_at: Date;
+}>(
+  `SELECT
+     id,
+     home_team,
+     away_team,
+     played_at
+   FROM matches
+   WHERE competition_id = $1
+     AND source = 'manual'
+     AND played_at IS NOT NULL
+   FOR UPDATE`,
+  [localCompetitionId]
+);
+
+const placeholderCandidates =
+  await client.query<{ id: number }>(
+    `SELECT id
+     FROM matches
+     WHERE competition_id = $1
+       AND source = 'fpf'
+       AND status = 'scheduled'
+       AND home_score IS NULL
+       AND away_score IS NULL
+       AND home_team = '1º ENCONTRO -'
+       AND away_team = 'Jogos'
+     ORDER BY id
+     FOR UPDATE`,
+    [localCompetitionId]
+  );
+
+for (const match of matches) {
+  const externalId =
+    `fpf:${match.fpfMatchId}`;
+
+  const matchDay =
+    match.playedAt?.slice(0, 10);
+
+  const manualIndex =
+    manualCandidates.rows.findIndex(row =>
+      normalizeTeamName(row.home_team) ===
+        normalizeTeamName(match.homeTeam) &&
+      normalizeTeamName(row.away_team) ===
+        normalizeTeamName(match.awayTeam) &&
+      row.played_at
+        .toISOString()
+        .slice(0, 10) === matchDay
     );
 
-    for (const match of matches) {
-      const externalId = `fpf:${match.fpfMatchId}`;
-      const matchDay = match.playedAt?.slice(0, 10);
-      const manualIndex = manualCandidates.rows.findIndex((row) =>
-        normalizeTeamName(row.home_team) === normalizeTeamName(match.homeTeam) &&
-        normalizeTeamName(row.away_team) === normalizeTeamName(match.awayTeam) &&
-        row.played_at.toISOString().slice(0, 10) === matchDay
+  if (manualIndex >= 0) {
+    console.log(
+      "RECONCILE_MANUAL_WITH_OFFICIAL",
+      externalId,
+      match.homeTeam,
+      "vs",
+      match.awayTeam
+    );
+
+    const [manualMatch] =
+      manualCandidates.rows.splice(
+        manualIndex,
+        1
       );
 
-      if (manualIndex >= 0) {
-console.log(
-  "SYNC_MATCH",
-  externalId,
-  match.homeTeam,
-  "vs",
-  match.awayTeam
-);        
-const [manualMatch] = manualCandidates.rows.splice(manualIndex, 1);
-        const occupiedId = await client.query(
-          "SELECT id FROM matches WHERE external_id = $1 AND id <> $2",
-          [externalId, manualMatch!.id]
-        );
-        if (!occupiedId.rowCount) {
-          await client.query(
-            `UPDATE matches SET external_id = $1, home_team = $2, away_team = $3,
-               group_name = $4, played_at = $5, venue = $6, home_score = $7, away_score = $8,
-               status = $9, source = 'fpf', updated_at = NOW() WHERE id = $10`,
-            [externalId, match.homeTeam, match.awayTeam, match.groupName, match.playedAt, match.venue,
-              match.homeScore, match.awayScore, match.status, manualMatch!.id]
-          );
-          continue;
-        }
-      }
-const existingByExternalId = await client.query<{
+    const occupiedId =
+      await client.query(
+        `SELECT id
+         FROM matches
+         WHERE external_id = $1
+           AND id <> $2`,
+        [
+          externalId,
+          manualMatch!.id
+        ]
+      );
+
+    if (!occupiedId.rowCount) {
+      await saveMatchSource(
+        client,
+        manualMatch!.id,
+        source,
+        sourcePriority,
+        null,
+        match.homeScore,
+        match.awayScore
+      );
+
+      await client.query(
+        `UPDATE matches
+         SET
+           external_id = $1,
+           home_team = $2,
+           away_team = $3,
+           group_name = $4,
+           played_at = $5,
+           venue = $6,
+           home_score = $7,
+           away_score = $8,
+           status = $9,
+           source = $10,
+           official_source = $10,
+           verification_status = 'official',
+           conflict_detected = FALSE,
+           conflict_reasons = NULL,
+           updated_at = NOW()
+         WHERE id = $11`,
+        [
+          externalId,
+          match.homeTeam,
+          match.awayTeam,
+          match.groupName,
+          match.playedAt,
+          match.venue,
+          match.homeScore,
+          match.awayScore,
+          match.status,
+          source,
+          manualMatch!.id
+        ]
+      );
+
+      continue;
+    }
+  }
+
+  const existingByExternalId = await client.query<{
   id: number;
 }>(
   `
