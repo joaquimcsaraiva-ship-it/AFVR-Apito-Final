@@ -724,7 +724,7 @@ const playedMatches = filteredMatches
       </div>
     `;
 
-const getMatchOutcome = match => {
+    const getMatchOutcome = match => {
   const searchedTeam =
     teamName.toLocaleLowerCase("pt-PT");
 
@@ -757,7 +757,7 @@ const getMatchOutcome = match => {
     };
   }
 
-    return {
+  return {
     label: "Derrota",
     className: "is-loss"
   };
@@ -808,36 +808,103 @@ recentResults.innerHTML =
         </p>
       `;
 
-    upcomingMatches.innerHTML =
-      nextFive.length
-        ? nextFive.map(match => `
-            <article class="team-match">
-              <div>
-                <strong>${match.homeTeam}</strong>
-              </div>
+const getMatchCompetition = match =>
+  filteredTeamCompetitionList.find(
+    competition =>
+      Number(competition.id) ===
+      Number(match.competitionId)
+  );
+const getMatchSide = match => {
+  const searchedTeam =
+    teamName.toLocaleLowerCase("pt-PT");
 
-              <div class="team-score">
-                vs
-              </div>
+  const isHome =
+    match.homeTeam
+      .toLocaleLowerCase("pt-PT")
+      .includes(searchedTeam);
 
-              <div>
-                <strong>${match.awayTeam}</strong>
-              </div>
+    return isHome ? "Casa" : "Fora";
+};
 
-              <small>
-                ${new Date(match.playedAt)
-                  .toLocaleDateString("pt-PT")}
-                ${match.venue
-                  ? ` · ${match.venue}`
-                  : ""}
-              </small>
-            </article>
-          `).join("")
-        : `
-            <p class="team-empty">
-              Sem próximos jogos.
-            </p>
-          `;
+upcomingMatches.innerHTML =
+  nextFive.length
+    ? nextFive.map(match => {
+        const competition =
+          getMatchCompetition(match);
+
+        const side =
+          getMatchSide(match);
+
+        const matchDate =
+          new Date(match.playedAt);
+
+        const dateText =
+          matchDate.toLocaleDateString(
+            "pt-PT"
+          );
+
+        const timeText =
+          matchDate.toLocaleTimeString(
+            "pt-PT",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          );
+
+        return `
+          <article class="team-match team-upcoming-match">
+            <div class="team-match-meta">
+              <span class="team-match-side">
+                ${side}
+              </span>
+
+              ${
+                competition
+                  ? `
+                    <span class="team-match-competition">
+                      ${competition.name}
+                    </span>
+                  `
+                  : ""
+              }
+            </div>
+
+            <div>
+              <strong>${match.homeTeam}</strong>
+            </div>
+
+            <div class="team-score">
+              vs
+            </div>
+
+            <div>
+              <strong>${match.awayTeam}</strong>
+            </div>
+
+            <small class="team-match-details">
+              <span>
+                ${dateText} · ${timeText}
+              </span>
+
+              ${
+                match.venue
+                  ? `
+                    <span>
+                      ${match.venue}
+                    </span>
+                  `
+                  : ""
+              }
+            </small>
+          </article>
+        `;
+      }).join("")
+    : `
+        <p class="team-empty">
+          Sem próximos jogos.
+        </p>
+      `;
 
   } catch (error) {
     console.error("TEAM_PAGE_ERROR", error);
