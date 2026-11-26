@@ -38,6 +38,17 @@ export async function rebuildStandings(): Promise<void> {
 
     const standings = new Map<string, Standing>();
 
+const competitionsWithGroups =
+  new Set<number>(
+    rows
+      .filter(match =>
+        String(match.group_name || "").trim() !== ""
+      )
+      .map(match =>
+        Number(match.competition_id)
+      )
+  );
+
     const getTeam = (
   competitionId: number,
   groupName: string,
@@ -66,17 +77,37 @@ groupName,
     };
 
 for (const match of rows) {
-      const competitionId = Number(match.competition_id);
+  const competitionId =
+    Number(match.competition_id);
 
-      const home = getTeam(
-  competitionId,
-  match.group_name || "",
-  match.home_team
-);
+  const groupName =
+    String(match.group_name || "").trim();
+
+  if (
+    competitionsWithGroups.has(competitionId) &&
+    !groupName
+  ) {
+    console.warn(
+      "STANDINGS_SKIP_MATCH_WITHOUT_GROUP",
+      {
+        competitionId,
+        homeTeam: match.home_team,
+        awayTeam: match.away_team
+      }
+    );
+
+    continue;
+  }
+
+  const home = getTeam(
+    competitionId,
+    groupName,
+    match.home_team
+  );
 
       const away = getTeam(
   competitionId,
-  match.group_name || "",
+  groupName,
   match.away_team
 );
 
