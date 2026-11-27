@@ -763,6 +763,7 @@ tbody tr:hover {
   padding: 18px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
+  border-left: 4px solid #2563eb;
   border-radius: 14px;
 }
 
@@ -809,6 +810,17 @@ tbody tr:hover {
   background: #f8fafc;
   border-radius: 9px;
   text-align: center;
+}
+
+.team-standing-stats > div:first-child {
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.team-standing-stats > div:first-child strong {
+  color: #1d4ed8;
+  font-size: 22px;
 }
 
 .team-standing-stats strong {
