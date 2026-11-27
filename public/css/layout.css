@@ -585,6 +585,54 @@ tbody tr:hover {
   margin-bottom: 24px;
 }
 
+.team-form {
+  margin-top: 18px;
+}
+
+.team-form-label {
+  margin-bottom: 8px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.team-form-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.team-form-result {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.team-form-result.is-win {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.team-form-result.is-draw {
+  color: #854d0e;
+  background: #fef9c3;
+}
+
+.team-form-result.is-loss {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.team-form-empty {
+  color: #64748b;
+  font-size: 13px;
+}
+
 @media (max-width: 680px) {
   .team-page {
     padding: 16px;

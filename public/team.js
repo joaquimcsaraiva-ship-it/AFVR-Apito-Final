@@ -4,6 +4,16 @@
 
   const teamName =
     params.get("name")?.trim();
+
+  const normalizeTeamName = name =>
+    String(name || "")
+      .trim()
+      .toLocaleLowerCase("pt-PT");
+
+  const isSameTeam = (nameA, nameB) =>
+    normalizeTeamName(nameA) ===
+    normalizeTeamName(nameB);
+
 const favoriteButton =
   document.getElementById("favoriteTeamButton");
 
@@ -105,6 +115,9 @@ const teamContext =
 
   const teamStats =
     document.getElementById("teamStats");
+
+const teamForm =
+  document.getElementById("teamForm");
 
   const recentResults =
     document.getElementById("recentResults");
@@ -490,10 +503,11 @@ const teamStandingRows =
               competition
             }))
             .filter(standing =>
-              standing.teamName
-                .toLocaleLowerCase("pt-PT")
-                .includes(searchedTeam)
-            )
+  isSameTeam(
+    standing.teamName,
+    teamName
+  )
+)
         );
     }
   );
@@ -726,14 +740,11 @@ const playedMatches = filteredMatches
     let goalsAgainst = 0;
 
     playedMatches.forEach(match => {
-      const searchedTeam =
-        teamName.toLocaleLowerCase("pt-PT");
-
-      const homeTeam =
-        match.homeTeam.toLocaleLowerCase("pt-PT");
-
-      const isHome =
-        homeTeam.includes(searchedTeam);
+            const isHome =
+        isSameTeam(
+          match.homeTeam,
+          teamName
+        );
 
       const teamGoals =
         isHome
@@ -790,13 +801,11 @@ const playedMatches = filteredMatches
     `;
 
     const getMatchOutcome = match => {
-  const searchedTeam =
-    teamName.toLocaleLowerCase("pt-PT");
-
   const isHome =
-    match.homeTeam
-      .toLocaleLowerCase("pt-PT")
-      .includes(searchedTeam);
+    isSameTeam(
+      match.homeTeam,
+      teamName
+    );
 
   const teamGoals =
     isHome
@@ -827,6 +836,45 @@ const playedMatches = filteredMatches
     className: "is-loss"
   };
 };
+
+const recentForm = lastFive.map(match => {
+  const outcome =
+    getMatchOutcome(match);
+
+  const shortLabel =
+    outcome.className === "is-win"
+      ? "V"
+      : outcome.className === "is-draw"
+        ? "E"
+        : "D";
+
+  return `
+    <span
+      class="team-form-result ${outcome.className}"
+      title="${outcome.label}"
+      aria-label="${outcome.label}"
+    >
+      ${shortLabel}
+    </span>
+  `;
+});
+
+teamForm.innerHTML =
+  recentForm.length
+    ? `
+        <div class="team-form-label">
+          Forma recente
+        </div>
+
+        <div class="team-form-results">
+          ${recentForm.join("")}
+        </div>
+      `
+    : `
+        <span class="team-form-empty">
+          Sem forma recente disponível.
+        </span>
+      `;
 
 recentResults.innerHTML =
   lastFive.length
@@ -880,13 +928,11 @@ const getMatchCompetition = match =>
       Number(match.competitionId)
   );
 const getMatchSide = match => {
-  const searchedTeam =
-    teamName.toLocaleLowerCase("pt-PT");
-
   const isHome =
-    match.homeTeam
-      .toLocaleLowerCase("pt-PT")
-      .includes(searchedTeam);
+    isSameTeam(
+      match.homeTeam,
+      teamName
+    );
 
     return isHome ? "Casa" : "Fora";
 };
