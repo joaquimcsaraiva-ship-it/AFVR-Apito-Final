@@ -13,7 +13,7 @@ describe("Standings API", () => {
     expect([200, 400, 404]).toContain(response.status);
   });
 
-  test("GET /api/results/standings devolve array quando responde 200", async () => {
+    test("GET /api/results/standings devolve classificacoes quando responde 200", async () => {
     const response = await request(app)
       .get("/api/results/standings")
       .query({
@@ -21,7 +21,12 @@ describe("Standings API", () => {
       });
 
     if (response.status === 200) {
-      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          standings: expect.any(Array),
+          hasPlayedMatches: expect.any(Boolean)
+        })
+      );
     }
   });
 });

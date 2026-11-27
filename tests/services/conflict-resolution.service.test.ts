@@ -111,4 +111,26 @@ describe("conflict-resolution.service", () => {
     expect(result?.homeScore).toBe(3);
     expect(result?.awayScore).toBe(0);
   });
+
+  test("fonte sem resultado nao gera falso conflito", async () => {
+    mockedGetMatchSources.mockResolvedValue([
+      {
+        source: "fpf",
+        sourcePriority: 100,
+        homeScore: null,
+        awayScore: null
+      } as any,
+      {
+        source: "manual",
+        sourcePriority: 60,
+        homeScore: 2,
+        awayScore: 1
+      } as any
+    ]);
+
+    const result = await resolveMatch(1);
+
+    expect(result?.conflictDetected).toBe(false);
+    expect(result?.reasons).toEqual([]);
+  });
 });

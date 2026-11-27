@@ -24,13 +24,18 @@ export async function resolveMatch(
     return null;
   }
 
+     const sourcesWithScores = sources.filter(
+    source =>
+      source.homeScore !== null &&
+      source.awayScore !== null
+  );
+
   const uniqueScores = new Set(
-    sources.map(
+    sourcesWithScores.map(
       source =>
         `${source.homeScore}-${source.awayScore}`
     )
   );
-
  const reasons: string[] = [];
 
 if (uniqueScores.size > 1) {

@@ -1,3 +1,7 @@
+jest.mock("../../src/services/standings.service", () => ({
+  rebuildStandings: jest.fn().mockResolvedValue(undefined)
+}));
+
 jest.mock("../../src/services/fpf.service", () => ({
   listFpfCompetitions: jest.fn().mockResolvedValue([]),
   fetchFpfCompetitionMatches: jest.fn(),

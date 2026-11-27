@@ -68,9 +68,10 @@ describe("result.controller", () => {
         res
       );
 
-      expect(res.json).toHaveBeenCalledWith([
-        { team: "A" }
-      ]);
+      expect(res.json).toHaveBeenCalledWith({
+        standings: [{ team: "A" }],
+        hasPlayedMatches: true
+      });
     });
   });
 });
